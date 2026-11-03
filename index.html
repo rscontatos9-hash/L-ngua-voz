@@ -1,1017 +1,409 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+<head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05060A">
 <title>LinguaVox — Tradutor Universal</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
   :root {
-    --bg: #05060A;
-    --panel-bg: rgba(18, 20, 32, 0.7);
-    --panel-border: rgba(255, 255, 255, 0.08);
-    --text-main: #E2E8F0;
-    --text-muted: #8B93B8;
-    --cyan: #22D3EE;
-    --violet: #A855F7;
-    --accent: #4F7CFF;
-    --success: #34D399;
-    --error: #FB7185;
-    --btn-bg: rgba(255, 255, 255, 0.05);
-    --btn-hover: rgba(255, 255, 255, 0.1);
+    --bg: #05060A; --panel-bg: rgba(18, 20, 32, 0.7); --panel-border: rgba(255, 255, 255, 0.08);
+    --text-main: #E2E8F0; --text-muted: #8B93B8; --cyan: #22D3EE; --violet: #A855F7;
+    --accent: #4F7CFF; --success: #34D399; --error: #FB7185;
+    --btn-bg: rgba(255, 255, 255, 0.05); --btn-hover: rgba(255, 255, 255, 0.1);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background-color: var(--bg);
-    color: var(--text-main);
-    font-family: 'Inter', system-ui, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  /* Fundo com brilho sutil (Glow) */
-  body::before {
-    content: '';
-    position: absolute;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100vw;
-    height: 500px;
-    background: radial-gradient(circle at center, rgba(79, 124, 255, 0.15) 0%, transparent 60%);
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .app-container {
-    width: 100%;
-    max-width: 480px;
-    padding: 24px 16px 40px;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  /* Header */
+  body { background-color: var(--bg); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; display: flex; justify-content: center; overflow-x: hidden; position: relative; }
+  body::before { content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 100vw; height: 500px; background: radial-gradient(circle at center, rgba(79, 124, 255, 0.15) 0%, transparent 60%); z-index: 0; pointer-events: none; }
+  .app-container { width: 100%; max-width: 480px; padding: 24px 16px 40px; position: relative; z-index: 1; display: flex; flex-direction: column; gap: 20px; }
+  
   .header { text-align: center; margin-bottom: 8px; }
   
-  .badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #CBD5E1;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  }
-
-  .logo {
-    font-size: 42px;
-    font-weight: 800;
-    background: linear-gradient(100deg, #7DD3FC, #818CF8 50%, #C084FC);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.03em;
-    margin-bottom: 10px;
-  }
-
-  .subtitle {
-    color: var(--text-muted);
-    font-size: 13px;
-    line-height: 1.5;
-    padding: 0 20px;
-  }
-
-  /* Language Selector Bar */
-  .lang-bar {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .lang-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--panel-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--panel-border);
-    padding: 14px 12px;
-    border-radius: 18px;
-    color: var(--text-main);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 100%;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-
-  .lang-btn:hover { background: var(--btn-hover); transform: translateY(-1px); }
-  .lang-btn .flag { font-size: 18px; }
-
-  .swap-btn {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4F7CFF, #A855F7);
-    border: none;
-    color: white;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
-    transition: all 0.3s ease;
-  }
-  .swap-btn:hover { transform: scale(1.05) rotate(180deg); box-shadow: 0 8px 25px rgba(168, 85, 247, 0.6); }
-  .swap-btn:active { transform: scale(0.95); }
-
-  /* Menus Dropdown */
-  .sel-container { position: relative; }
-  .dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    width: 100%;
-    max-height: 250px;
-    overflow-y: auto;
-    background: #121420;
-    border: 1px solid var(--panel-border);
-    border-radius: 18px;
-    padding: 8px;
-    z-index: 100;
-    display: none;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-  }
-  .dropdown.active { display: block; animation: fadeInDown 0.2s ease; }
-  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  /* Top Bar: Menu à esquerda e Badge à direita */
+  .top-bar { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
   
-  .dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--text-muted);
-    transition: all 0.2s;
-  }
+  .badge { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #CBD5E1; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; }
+  .ui-lang-select { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-main); border-radius: 999px; padding: 6px 10px; font-size: 11px; font-weight: 700; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.2s; }
+  .ui-lang-select:hover { background: rgba(255, 255, 255, 0.1); }
+  .ui-lang-select option { background: #121420; color: white; }
+  
+  .logo { font-size: 42px; font-weight: 800; background: linear-gradient(100deg, #7DD3FC, #818CF8 50%, #C084FC); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.03em; margin-bottom: 10px; }
+  .subtitle { color: var(--text-muted); font-size: 13px; line-height: 1.5; padding: 0 20px; text-align: center; margin: 0 auto; }
+  
+  .lang-bar { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+  .lang-btn { display: flex; align-items: center; gap: 8px; background: var(--panel-bg); backdrop-filter: blur(10px); border: 1px solid var(--panel-border); padding: 14px 12px; border-radius: 18px; color: var(--text-main); font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; }
+  .swap-btn { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #4F7CFF, #A855F7); border: none; color: white; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4); }
+  
+  .audio-settings { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 16px; backdrop-filter: blur(10px); }
+  .profile-buttons { display: flex; gap: 8px; }
+  .profile-btn { flex: 1; background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .profile-btn.active { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.05); color: #fff; }
+  .speed-control { display: flex; align-items: center; gap: 12px; padding: 0 4px; }
+  .speed-control label { font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+  .speed-control span { color: var(--cyan); font-weight: 700; width: 36px; text-align: right; }
+  input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+  input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(255, 255, 255, 0.1); border-radius: 999px; }
+  input[type=range]::-webkit-slider-thumb { height: 18px; width: 18px; border-radius: 50%; background: #fff; cursor: pointer; -webkit-appearance: none; margin-top: -6px; }
+  
+  .sel-container { position: relative; }
+  .dropdown { position: absolute; top: calc(100% + 8px); left: 0; width: 100%; max-height: 250px; overflow-y: auto; background: #121420; border: 1px solid var(--panel-border); border-radius: 18px; padding: 8px; z-index: 100; display: none; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+  .dropdown.active { display: block; }
+  .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 14px; color: var(--text-muted); }
   .dropdown-item:hover { background: rgba(255,255,255,0.08); color: white; }
   .dropdown-item.active { color: var(--accent); font-weight: 600; background: rgba(79, 124, 255, 0.1); }
-
-  /* Panels */
-  .panel {
-    background: var(--panel-bg);
-    backdrop-filter: blur(16px);
-    border: 1px solid var(--panel-border);
-    border-radius: 24px;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    transition: border-color 0.3s;
-  }
-  .panel:focus-within { border-color: rgba(79, 124, 255, 0.4); }
-
-  .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .panel-label {
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .label-origem { color: var(--cyan); }
-  .label-traducao { color: #C084FC; }
-
-  .chip {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    background: rgba(255,255,255,0.05);
-    padding: 5px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--panel-border);
-  }
-
-  textarea {
-    width: 100%;
-    min-height: 100px;
-    background: transparent;
-    border: none;
-    color: var(--text-main);
-    font-size: 17px;
-    font-family: inherit;
-    resize: none;
-    outline: none;
-    line-height: 1.5;
-  }
-  textarea::placeholder { color: var(--text-muted); opacity: 0.5; }
-
-  .action-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
   
-  .action-grid-3 {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  .action-btn {
-    background: var(--btn-bg);
-    border: 1px solid var(--panel-border);
-    padding: 12px;
-    border-radius: 999px;
-    color: var(--text-main);
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  .action-btn:hover { background: var(--btn-hover); transform: translateY(-1px); border-color: rgba(255,255,255,0.2); }
-  .action-btn:active { transform: translateY(1px); }
+  .panel { background: var(--panel-bg); backdrop-filter: blur(16px); border: 1px solid var(--panel-border); border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .panel-header { display: flex; justify-content: space-between; align-items: center; }
+  .panel-label { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  .label-origem { color: var(--cyan); } .label-traducao { color: #C084FC; }
+  .chip { font-size: 11px; font-weight: 600; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 999px; border: 1px solid var(--panel-border); }
+  textarea { width: 100%; min-height: 100px; background: transparent; border: none; color: var(--text-main); font-size: 17px; font-family: inherit; resize: none; outline: none; line-height: 1.5; }
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .action-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .action-btn { background: var(--btn-bg); border: 1px solid var(--panel-border); padding: 12px; border-radius: 999px; color: var(--text-main); font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+  .icon-svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+  .action-btn.listening { background: rgba(251, 113, 133, 0.15); border-color: rgba(251, 113, 133, 0.5); color: var(--error); }
   
-  /* SVGs */
-  .icon-svg {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
-    transition: all 0.3s;
-  }
-
-  /* Efeito de gravação do microfone */
-  .action-btn.listening {
-    background: rgba(251, 113, 133, 0.15);
-    border-color: rgba(251, 113, 133, 0.5);
-    color: var(--error);
-    animation: pulse-mic 1.5s infinite;
-  }
-  .action-btn.listening .icon-svg {
-    stroke: var(--error);
-  }
-  @keyframes pulse-mic {
-    0% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(251, 113, 133, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0); }
-  }
-
-  /* Painel de Histórico Expansível */
-  .history-panel {
-    display: none;
-    background: rgba(0,0,0,0.3);
-    border-radius: 16px;
-    padding: 12px;
-    margin-top: 4px;
-    border: 1px solid var(--panel-border);
-    animation: fadeInDown 0.3s ease;
-  }
+  .history-panel { display: none; background: rgba(0,0,0,0.3); border-radius: 16px; padding: 12px; margin-top: 4px; border: 1px solid var(--panel-border); }
   .history-panel.active { display: block; }
+  .history-list { max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .history-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; font-size: 12px; cursor: pointer; border-left: 2px solid var(--accent); }
+  .clear-hist-btn { width: 100%; background: rgba(251, 113, 133, 0.1); color: var(--error); border: 1px solid rgba(251, 113, 133, 0.3); padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
   
-  .history-list {
-    max-height: 150px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .history-item {
-    background: rgba(255,255,255,0.03);
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border-left: 2px solid var(--accent);
-  }
-  .history-item:hover { background: rgba(255,255,255,0.08); }
-  .history-item strong { color: var(--text-main); display: block; margin-bottom: 4px; font-weight: 600;}
-  .history-item span { color: var(--text-muted); }
-  
-  .clear-hist-btn {
-    width: 100%;
-    background: rgba(251, 113, 133, 0.1);
-    color: var(--error);
-    border: 1px solid rgba(251, 113, 133, 0.3);
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .clear-hist-btn:hover { background: rgba(251, 113, 133, 0.2); }
-
-  .panel-footer {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 4px;
-    font-weight: 500;
-  }
-
-  /* Main Button */
-  .main-btn {
-    width: 100%;
-    padding: 20px;
-    border-radius: 20px;
-    background: linear-gradient(100deg, #4F7CFF, #A855F7);
-    border: none;
-    color: white;
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.5);
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    position: relative;
-    overflow: hidden;
-  }
-  .main-btn::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%; width: 50%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transform: skewX(-20deg);
-    transition: 0.5s;
-  }
-  .main-btn:hover::after { left: 150%; }
-  .main-btn:hover { opacity: 0.95; transform: translateY(-2px); box-shadow: 0 15px 35px -5px rgba(168, 85, 247, 0.7); }
-  .main-btn:active { transform: translateY(1px); }
-  .main-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
-
-  .status-msg {
-    text-align: center;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--success);
-    min-height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
+  .panel-footer { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .main-btn { width: 100%; padding: 20px; border-radius: 20px; background: linear-gradient(100deg, #4F7CFF, #A855F7); border: none; color: white; font-size: 16px; font-weight: 800; letter-spacing: 0.05em; cursor: pointer; box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.5); margin-top: 10px; }
+  .status-msg { text-align: center; font-size: 13px; font-weight: 600; color: var(--success); min-height: 20px; display: flex; align-items: center; justify-content: center; }
   .status-msg.error { color: var(--error); }
-
-  .app-footer {
-    text-align: center;
-    font-size: 11px;
-    color: #4B526D;
-    margin-top: 10px;
-    line-height: 1.6;
-  }
-
-  /* Overlay Legenda */
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(5, 6, 10, 0.85);
-    backdrop-filter: blur(12px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 1000;
-  }
-  .overlay.active { display: flex; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   
-  .overlay-content {
-    background: #121420;
-    border: 1px solid var(--panel-border);
-    border-radius: 24px;
-    padding: 30px 24px;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-  }
-  .overlay-content h3 { margin-bottom: 16px; color: var(--cyan); font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; }
+  /* Rodapé e Copyright em duas linhas */
+  .app-footer { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; margin-top: 16px; font-size: 11px; color: #4B526D; line-height: 1.5; }
+  .copyright { font-size: 10px; color: #3A4059; font-weight: 500; letter-spacing: 0.5px; }
+  
+  .overlay { position: fixed; inset: 0; background: rgba(5, 6, 10, 0.85); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 1000; }
+  .overlay.active { display: flex; }
+  .overlay-content { background: #121420; border: 1px solid var(--panel-border); border-radius: 24px; padding: 30px 24px; width: 100%; max-width: 400px; text-align: center; }
+  .overlay-content h3 { margin-bottom: 16px; color: var(--cyan); font-size: 13px; text-transform: uppercase; }
   .overlay-content p { font-size: 22px; font-weight: 700; margin-bottom: 30px; line-height: 1.4; color: #fff; }
-  .overlay-content small { display: block; color: var(--text-muted); margin-bottom: 20px; font-size: 15px; line-height: 1.4;}
-  
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 10px; }
+  .overlay-content small { display: block; color: var(--text-muted); margin-bottom: 20px; font-size: 15px; }
 </style>
 </head>
 <body>
-
 <div class="app-container">
-  
-  <!-- Header -->
   <header class="header">
-    <div class="badge">Tradutor com voz e legenda</div>
+    <div class="top-bar">
+      <!-- Menu à esquerda, Badge à direita -->
+      <select class="ui-lang-select" id="uiLangSelect">
+        <option value="pt">🇧🇷 PT</option><option value="en">🇺🇸 EN</option><option value="es">🇪🇸 ES</option><option value="hi">🇮🇳 HI</option><option value="zh">🇨🇳 ZH</option>
+      </select>
+      <div class="badge" id="uiBadge">Tradutor com voz e legenda</div>
+    </div>
     <h1 class="logo">LinguaVox</h1>
-    <p class="subtitle">Traduza entre 30 idiomas com motor Google • MyMemory • Libre, áudio perfeito e legenda.</p>
+    <p class="subtitle" id="uiSubtitle">Traduza entre 30 idiomas com motor Google • MyMemory • Lingva (4x), áudio natural e legenda.</p>
   </header>
-
-  <!-- Language Selector -->
   <div class="lang-bar">
-    <div class="sel-container" id="fromContainer">
-      <button class="lang-btn" id="fromBtn">
-        <span class="flag" id="fromFlag">🇧🇷</span>
-        <span id="fromName">Português</span>
-      </button>
-      <div class="dropdown" id="fromDropdown"></div>
-    </div>
-    
+    <div class="sel-container" id="fromContainer"><button class="lang-btn" id="fromBtn"><span class="flag" id="fromFlag">🇧🇷</span><span id="fromName">Português</span></button><div class="dropdown" id="fromDropdown"></div></div>
     <button class="swap-btn" id="swapBtn">⇅</button>
-    
-    <div class="sel-container" id="toContainer">
-      <button class="lang-btn" id="toBtn">
-        <span class="flag" id="toFlag">🇺🇸</span>
-        <span id="toName">Inglês</span>
-      </button>
-      <div class="dropdown" id="toDropdown"></div>
-    </div>
+    <div class="sel-container" id="toContainer"><button class="lang-btn" id="toBtn"><span class="flag" id="toFlag">🇺🇸</span><span id="toName">Inglês</span></button><div class="dropdown" id="toDropdown"></div></div>
   </div>
-
-  <!-- Origem Panel -->
-  <div class="panel">
-    <div class="panel-header">
-      <span class="panel-label label-origem">Origem</span>
-      <span class="chip" id="fromChip">Português</span>
+  <div class="audio-settings">
+    <div class="profile-buttons">
+      <button class="profile-btn active" data-profile="normal"><span id="uiNormalTone">Tom Normal</span></button>
+      <button class="profile-btn" data-profile="grave"><span id="uiDeepTone">Tom Grave</span></button>
     </div>
+    <div class="speed-control"><label id="uiSpeed">Velocidade</label><input type="range" id="speedSlider" min="0.5" max="1.5" step="0.1" value="1.0"><span id="speedValue">1.0x</span></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><span class="panel-label label-origem" id="uiOrigin">Origem</span><span class="chip" id="fromChip">Português</span></div>
     <textarea id="srcText" placeholder="Digite ou fale algo..."></textarea>
-    
     <div class="action-grid">
       <button class="action-btn" id="micBtn">
         <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
-        Falar
+        <span id="uiSpeakBtn">Falar</span>
       </button>
       <button class="action-btn" id="speakSrcBtn">
         <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-        Ouvir
+        <span id="uiListenBtn">Ouvir</span>
       </button>
-      <button class="action-btn" id="clearBtn">
-        <svg class="icon-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        Limpar
-      </button>
-      <button class="action-btn" id="histBtn">
-        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        Histórico (<span id="histCount">0</span>)
-      </button>
+      <button class="action-btn" id="clearBtn"><span id="uiClearBtn">Limpar</span></button>
+      <button class="action-btn" id="histBtn"><span id="uiHistBtn">Histórico</span> (<span id="histCount">0</span>)</button>
     </div>
-
-    <!-- Painel de Histórico (Escondido por padrão) -->
-    <div class="history-panel" id="historyPanel">
-      <div class="history-list" id="historyList">
-        <!-- Itens inseridos via JS -->
-      </div>
-      <button class="clear-hist-btn" id="clearHistBtn">
-        <svg class="icon-svg" style="width:14px;height:14px;" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-        Limpar Histórico
-      </button>
-    </div>
-
-    <div class="panel-footer">
-      <span id="srcCount">0 caracteres</span>
-      <span>Ctrl+Enter</span>
-    </div>
+    <div class="history-panel" id="historyPanel"><div class="history-list" id="historyList"></div><button class="clear-hist-btn" id="clearHistBtn"><span id="uiClearHist">Limpar Histórico</span></button></div>
+    <div class="panel-footer"><span id="srcCount">0 caracteres</span><span>Ctrl+Enter</span></div>
   </div>
-
-  <!-- Tradução Panel -->
   <div class="panel">
-    <div class="panel-header">
-      <span class="panel-label label-traducao">Tradução</span>
-      <span class="chip" id="toChip">Inglês 100%</span>
-    </div>
+    <div class="panel-header"><span class="panel-label label-traducao" id="uiTranslation">Tradução</span><span class="chip" id="toChip">Inglês detectado</span></div>
     <textarea id="outText" placeholder="A tradução aparecerá aqui..." readonly></textarea>
-    
     <div class="action-grid action-grid-3">
       <button class="action-btn" id="speakOutBtn">
         <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-        Ouvir
+        <span id="uiListenBtn2">Ouvir</span>
       </button>
-      <button class="action-btn" id="copyBtn">
-        <svg class="icon-svg" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-        Copiar
-      </button>
-      <button class="action-btn" id="subBtn">
-        <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-        Legenda
-      </button>
+      <button class="action-btn" id="copyBtn"><span id="uiCopyBtn">Copiar</span></button>
+      <button class="action-btn" id="subBtn"><span id="uiSubBtn">Legenda</span></button>
     </div>
-
-    <div class="panel-footer">
-      <span id="outCount">0 caracteres</span>
-      <span>Tradução automática</span>
-    </div>
+    <div class="panel-footer"><span id="outCount">0 caracteres</span><span id="uiAutoTrans">Tradução automática</span></div>
   </div>
-
-  <!-- Main Action -->
   <button class="main-btn" id="translateBtn">TRADUZIR AGORA</button>
+  <div class="status-msg" id="statusMsg"></div>
   
-  <div class="status-msg" id="statusMsg">
-    <!-- Status -->
-  </div>
-
+  <!-- Rodapé e Copyright -->
   <div class="app-footer">
-    LinguaVox • tradução via Google + MyMemory • 100% no navegador
+    <span id="uiFooter">LinguaVox • Google + MyMemory + Lingva (4 instâncias) • 100% no navegador</span>
+    <span class="copyright">© 2026 Brasil</span>
   </div>
 </div>
 
-<!-- Overlay Legenda -->
+<!-- OVERLAY LEGENDA COM O NOVO BOTÃO DE DOWNLOAD -->
 <div class="overlay" id="overlay">
   <div class="overlay-content">
-    <h3>Modo Legenda</h3>
+    <h3 id="uiModalTitle">Modo Legenda</h3>
     <small id="ovSrc"></small>
     <p id="ovOut"></p>
     <div class="action-grid">
-      <button class="action-btn" id="ovClose">Fechar</button>
-      <button class="action-btn" style="background: var(--accent); color: white; border: none;" id="ovPlay">🔊 Ouvir</button>
+      <button class="action-btn" id="ovClose"><span id="uiModalClose">Fechar</span></button>
+      <button class="action-btn" style="background: var(--accent); color: white; border: none;" id="ovPlay">
+        <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+        <span id="uiModalListen">Ouvir</span>
+      </button>
+    </div>
+    <!-- Botão de Download do MP3 -->
+    <div class="action-grid" style="margin-top: 10px;">
+      <button class="action-btn" id="ovDownload" style="grid-column: span 2; background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1);">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span id="uiDownloadBtn">Baixar Áudio MP3</span>
+      </button>
     </div>
   </div>
 </div>
 
 <script>
-  // Dados dos Idiomas
-  const LANGS = [
-    {c:"pt", n:"Português", f:"🇧🇷"}, {c:"en", n:"Inglês", f:"🇺🇸"},
-    {c:"es", n:"Espanhol", f:"🇪🇸"}, {c:"fr", n:"Francês", f:"🇫🇷"},
-    {c:"it", n:"Italiano", f:"🇮🇹"}, {c:"de", n:"Alemão", f:"🇩🇪"},
-    {c:"ja", n:"Japonês", f:"🇯🇵"}, {c:"ko", n:"Coreano", f:"🇰🇷"},
-    {c:"zh", n:"Chinês", f:"🇨🇳"}, {c:"ru", n:"Russo", f:"🇷🇺"},
-    {c:"ar", n:"Árabe", f:"🇸🇦"}, {c:"hi", n:"Hindi", f:"🇮🇳"},
-    {c:"nl", n:"Holandês", f:"🇳🇱"}, {c:"pl", n:"Polonês", f:"🇵🇱"},
-    {c:"tr", n:"Turco", f:"🇹🇷"}, {c:"uk", n:"Ucraniano", f:"🇺🇦"},
-    {c:"el", n:"Grego", f:"🇬🇷"}, {c:"he", n:"Hebraico", f:"🇮🇱"},
-    {c:"th", n:"Tailandês", f:"🇹🇭"}, {c:"vi", n:"Vietnamita", f:"🇻🇳"},
-    {c:"sv", n:"Sueco", f:"🇸🇪"}, {c:"no", n:"Norueguês", f:"🇳🇴"},
-    {c:"da", n:"Dinamarquês", f:"🇩🇰"}, {c:"fi", n:"Finlandês", f:"🇫🇮"},
-    {c:"ro", n:"Romeno", f:"🇷🇴"}, {c:"cs", n:"Tcheco", f:"🇨🇿"},
-    {c:"hu", n:"Húngaro", f:"🇭🇺"}, {c:"id", n:"Indonésio", f:"🇮🇩"},
-    {c:"tl", n:"Filipino", f:"🇵🇭"}, {c:"bn", n:"Bengali", f:"🇧🇩"}
-  ];
-
-  // Estado Global
-  let state = {
-    from: "pt",
-    to: "en",
-    history: []
+  const i18n = {
+    pt: { badge: "Tradutor com voz e legenda", subtitle: "Traduza entre 30 idiomas com motor Google • MyMemory • Lingva (4x), áudio natural e legenda.", normalTone: "Tom Normal", deepTone: "Tom Grave", speed: "Velocidade", origin: "Origem", translation: "Tradução", srcPlaceholder: "Digite ou fale algo...", outPlaceholder: "A tradução aparecerá aqui...", speak: "Falar", listen: "Ouvir", clear: "Limpar", history: "Histórico", copy: "Copiar", subtitleBtn: "Legenda", translateBtn: "TRADUZIR AGORA", translatingBtn: "TRADUZINDO...", clearHistory: "Limpar Histórico", noHistory: "Nenhum histórico recente.", chars: "caracteres", autoTrans: "Tradução automática", statusListening: "Ouvindo... Fale agora.", statusTranslating: "Traduzindo...", statusSuccess: "✓ Traduzido com sucesso", statusCopied: "✓ Copiado!", statusRecovered: "Histórico recuperado.", statusCleared: "Histórico limpo.", statusError: "Erro na tradução.", statusMicError: "Erro no microfone.", statusMicDenied: "Permissão negada.", statusNoSpeech: "Nenhuma fala detectada.", statusMicUnsupported: "Voz não suportada.", modalTitle: "Modo Legenda", modalClose: "Fechar", modalListen: "Ouvir", footer: "LinguaVox • Google + MyMemory + Lingva (4 instâncias) • 100% no navegador", detected: "detectado", downloadBtn: "Baixar Áudio MP3", statusDownloading: "Preparando download..." },
+    en: { badge: "Voice and subtitle translator", subtitle: "Translate between 30 languages with Google • MyMemory • Lingva (4x), natural audio and subtitles.", normalTone: "Normal Tone", deepTone: "Deep Tone", speed: "Speed", origin: "Source", translation: "Translation", srcPlaceholder: "Type or speak...", outPlaceholder: "Translation will appear here...", speak: "Speak", listen: "Listen", clear: "Clear", history: "History", copy: "Copy", subtitleBtn: "Subtitle", translateBtn: "TRANSLATE NOW", translatingBtn: "TRANSLATING...", clearHistory: "Clear History", noHistory: "No recent history.", chars: "characters", autoTrans: "Auto translation", statusListening: "Listening...", statusTranslating: "Translating...", statusSuccess: "✓ Translated", statusCopied: "✓ Copied!", statusRecovered: "History recovered.", statusCleared: "History cleared.", statusError: "Translation error.", statusMicError: "Mic error.", statusMicDenied: "Mic denied.", statusNoSpeech: "No speech.", statusMicUnsupported: "Not supported.", modalTitle: "Subtitle Mode", modalClose: "Close", modalListen: "Listen", footer: "LinguaVox • Google + MyMemory + Lingva (4x) • 100% in browser", detected: "detected", downloadBtn: "Download MP3 Audio", statusDownloading: "Preparing download..." },
+    es: { badge: "Traductor de voz y subtítulos", subtitle: "Traduce entre 30 idiomas con Google • MyMemory • Lingva (4x), audio natural y subtítulos.", normalTone: "Tono Normal", deepTone: "Tono Grave", speed: "Velocidad", origin: "Origen", translation: "Traducción", srcPlaceholder: "Escribe o habla...", outPlaceholder: "La traducción aparecerá aquí...", speak: "Hablar", listen: "Escuchar", clear: "Limpiar", history: "Historial", copy: "Copiar", subtitleBtn: "Subtítulo", translateBtn: "TRADUCIR AHORA", translatingBtn: "TRADUCIENDO...", clearHistory: "Limpiar Historial", noHistory: "Sin historial.", chars: "caracteres", autoTrans: "Traducción automática", statusListening: "Escuchando...", statusTranslating: "Traduciendo...", statusSuccess: "✓ Traducido", statusCopied: "✓ ¡Copiado!", statusRecovered: "Recuperado.", statusCleared: "Limpiado.", statusError: "Error de traducción.", statusMicError: "Error de micrófono.", statusMicDenied: "Permiso denegado.", statusNoSpeech: "No se detectó habla.", statusMicUnsupported: "No soportado.", modalTitle: "Modo Subtítulo", modalClose: "Cerrar", modalListen: "Escuchar", footer: "LinguaVox • Google + MyMemory + Lingva (4x) • 100% en el navegador", detected: "detectado", downloadBtn: "Descargar Audio MP3", statusDownloading: "Preparando descarga..." },
+    hi: { badge: "आवाज़ और सबटाइटल अनुवादक", subtitle: "Google • MyMemory • Lingva (4x) के साथ 30 भाषाओं में अनुवाद करें।", normalTone: "सामान्य स्वर", deepTone: "गहरा स्वर", speed: "गति", origin: "स्रोत", translation: "अनुवाद", srcPlaceholder: "कुछ लिखें...", outPlaceholder: "अनुवाद यहाँ...", speak: "बोलें", listen: "सुनें", clear: "साफ़ करें", history: "इतिहास", copy: "कॉपी", subtitleBtn: "सबटाइटल", translateBtn: "अनुवाद करें", translatingBtn: "हो रहा है...", clearHistory: "साफ़ करें", noHistory: "कोई इतिहास नहीं।", chars: "अक्षर", autoTrans: "स्वचालित अनुवाद", statusListening: "सुन रहा है...", statusTranslating: "अनुवाद...", statusSuccess: "✓ अनुवादित", statusCopied: "✓ कॉपी!", statusRecovered: "पुनर्प्राप्त।", statusCleared: "साफ़ किया।", statusError: "त्रुटि।", statusMicError: "माइक त्रुटि।", statusMicDenied: "अनुमति नहीं।", statusNoSpeech: "कोई भाषण नहीं।", statusMicUnsupported: "समर्थित नहीं।", modalTitle: "सबटाइटल मोड", modalClose: "बंद करें", modalListen: "सुनें", footer: "LinguaVox • Google + MyMemory + Lingva • 100%", detected: "पहचाना गया", downloadBtn: "MP3 डाउनलोड करें", statusDownloading: "डाउनलोड तैयार..." },
+    zh: { badge: "语音和字幕翻译器", subtitle: "使用 Google • MyMemory • Lingva (4x) 在 30 种语言之间翻译。", normalTone: "正常音调", deepTone: "低沉音调", speed: "速度", origin: "源语言", translation: "翻译", srcPlaceholder: "输入内容...", outPlaceholder: "翻译将显示...", speak: "说话", listen: "收听", clear: "清除", history: "历史", copy: "复制", subtitleBtn: "字幕", translateBtn: "立即翻译", translatingBtn: "翻译中...", clearHistory: "清除历史", noHistory: "没有历史。", chars: "字符", autoTrans: "自动翻译", statusListening: "正在聆听...", statusTranslating: "正在翻译...", statusSuccess: "✓ 成功", statusCopied: "✓ 已复制！", statusRecovered: "已恢复。", statusCleared: "已清除。", statusError: "翻译错误。", statusMicError: "麦克风错误。", statusMicDenied: "权限被拒绝。", statusNoSpeech: "未检测到语音。", statusMicUnsupported: "不支持。", modalTitle: "字幕模式", modalClose: "关闭", modalListen: "收听", footer: "LinguaVox • Google + MyMemory + Lingva • 100% 在浏览器", detected: "已检测", downloadBtn: "下载 MP3 音频", statusDownloading: "正在准备下载..." }
   };
-
-  // Carregar do localStorage
+  const LANGS = [
+    {c:"pt", n:"Português", f:"🇧🇷"}, {c:"en", n:"Inglês", f:"🇺🇸"}, {c:"es", n:"Espanhol", f:"🇪🇸"}, {c:"fr", n:"Francês", f:"🇫🇷"}, {c:"it", n:"Italiano", f:"🇮🇹"}, {c:"de", n:"Alemão", f:"🇩🇪"}, {c:"ja", n:"Japonês", f:"🇯🇵"}, {c:"ko", n:"Coreano", f:"🇰🇷"}, {c:"zh", n:"Chinês", f:"🇨🇳"}, {c:"ru", n:"Russo", f:"🇷🇺"}, {c:"ar", n:"Árabe", f:"🇸🇦"}, {c:"hi", n:"Hindi", f:"🇮🇳"}, {c:"nl", n:"Holandês", f:"🇳🇱"}, {c:"pl", n:"Polonês", f:"🇵🇱"}, {c:"tr", n:"Turco", f:"🇹🇷"}, {c:"uk", n:"Ucraniano", f:"🇺🇦"}, {c:"el", n:"Grego", f:"🇬🇷"}, {c:"he", n:"Hebraico", f:"🇮🇱"}, {c:"th", n:"Tailandês", f:"🇹🇭"}, {c:"vi", n:"Vietnamita", f:"🇻🇳"}, {c:"sv", n:"Sueco", f:"🇸🇪"}, {c:"no", n:"Norueguês", f:"🇳🇴"}, {c:"da", n:"Dinamarquês", f:"🇩🇰"}, {c:"fi", n:"Finlandês", f:"🇫🇮"}, {c:"ro", n:"Romeno", f:"🇷🇴"}, {c:"cs", n:"Tcheco", f:"🇨🇿"}, {c:"hu", n:"Húngaro", f:"🇭🇺"}, {c:"id", n:"Indonésio", f:"🇮🇩"}, {c:"tl", n:"Filipino", f:"🇵🇭"}, {c:"bn", n:"Bengali", f:"🇧🇩"}
+  ];
+  const localeMap = { pt: 'pt-BR', en: 'en-US', es: 'es-ES', fr: 'fr-FR', it: 'it-IT', de: 'de-DE', ja: 'ja-JP', ko: 'ko-KR', zh: 'zh-CN', ru: 'ru-RU', ar: 'ar-SA', hi: 'hi-IN', nl: 'nl-NL', pl: 'pl-PL', tr: 'tr-TR', uk: 'uk-UA', el: 'el-GR', he: 'he-IL', th: 'th-TH', vi: 'vi-VN', sv: 'sv-SE', no: 'nb-NO', da: 'da-DK', fi: 'fi-FI', ro: 'ro-RO', cs: 'cs-CZ', hu: 'hu-HU', id: 'id-ID', tl: 'fil-PH', bn: 'bn-BD' };
+  const specialLocales = { ar: ['ar-SA', 'ar-EG', 'ar-AE', 'ar'], he: ['he-IL', 'he', 'iw-IL', 'iw'], no: ['nb-NO', 'no-NO', 'no', 'nn-NO'], id: ['id-ID', 'id'] };
+  let state = { from: "pt", to: "en", history: [], audioProfile: "normal", speed: 1.0, uiLang: "pt" };
   try {
-    const savedHist = localStorage.getItem("linguavox-h");
-    if (savedHist) state.history = JSON.parse(savedHist);
-    const savedFrom = localStorage.getItem("linguavox-from");
-    if (savedFrom) state.from = savedFrom;
-    const savedTo = localStorage.getItem("linguavox-to");
-    if (savedTo) state.to = savedTo;
+    const savedHist = localStorage.getItem("linguavox-h"); if (savedHist) state.history = JSON.parse(savedHist);
+    const savedFrom = localStorage.getItem("linguavox-from"); if (savedFrom) state.from = savedFrom;
+    const savedTo = localStorage.getItem("linguavox-to"); if (savedTo) state.to = savedTo;
+    const savedProfile = localStorage.getItem("linguavox-audio-profile"); if (savedProfile) state.audioProfile = savedProfile;
+    const savedSpeed = localStorage.getItem("linguavox-speed"); if (savedSpeed) state.speed = parseFloat(savedSpeed);
+    const savedUiLang = localStorage.getItem("linguavox-uilang"); if (savedUiLang) state.uiLang = savedUiLang;
   } catch (e) {}
-
-  // Elementos DOM
-  const srcText = document.getElementById("srcText");
-  const outText = document.getElementById("outText");
-  const translateBtn = document.getElementById("translateBtn");
-  const statusMsg = document.getElementById("statusMsg");
-  const srcCount = document.getElementById("srcCount");
-  const outCount = document.getElementById("outCount");
-  const fromFlag = document.getElementById("fromFlag");
-  const fromName = document.getElementById("fromName");
-  const fromChip = document.getElementById("fromChip");
-  const toFlag = document.getElementById("toFlag");
-  const toName = document.getElementById("toName");
-  const toChip = document.getElementById("toChip");
-  const fromDropdown = document.getElementById("fromDropdown");
-  const toDropdown = document.getElementById("toDropdown");
-  const histCount = document.getElementById("histCount");
-  const micBtn = document.getElementById("micBtn");
-  const historyPanel = document.getElementById("historyPanel");
-  const historyList = document.getElementById("historyList");
-  const clearHistBtn = document.getElementById("clearHistBtn");
-
-  // Utilitários
+  const srcText = document.getElementById("srcText"); const outText = document.getElementById("outText"); const translateBtn = document.getElementById("translateBtn"); const statusMsg = document.getElementById("statusMsg"); const srcCount = document.getElementById("srcCount"); const outCount = document.getElementById("outCount"); const fromFlag = document.getElementById("fromFlag"); const fromName = document.getElementById("fromName"); const fromChip = document.getElementById("fromChip"); const toFlag = document.getElementById("toFlag"); const toName = document.getElementById("toName"); const toChip = document.getElementById("toChip"); const fromDropdown = document.getElementById("fromDropdown"); const toDropdown = document.getElementById("toDropdown"); const histCount = document.getElementById("histCount"); const micBtn = document.getElementById("micBtn"); const historyPanel = document.getElementById("historyPanel"); const historyList = document.getElementById("historyList"); const profileBtns = document.querySelectorAll(".profile-btn"); const speedSlider = document.getElementById("speedSlider"); const speedValue = document.getElementById("speedValue"); const uiLangSelect = document.getElementById("uiLangSelect");
+  
+  const t = (key) => i18n[state.uiLang][key] || i18n['pt'][key];
+  
+  function applyLanguage() {
+    document.getElementById("uiBadge").textContent = t('badge'); document.getElementById("uiSubtitle").textContent = t('subtitle'); document.getElementById("uiNormalTone").textContent = t('normalTone'); document.getElementById("uiDeepTone").textContent = t('deepTone'); document.getElementById("uiSpeed").textContent = t('speed'); document.getElementById("uiOrigin").textContent = t('origin'); document.getElementById("uiTranslation").textContent = t('translation');
+    srcText.placeholder = t('srcPlaceholder'); outText.placeholder = t('outPlaceholder');
+    document.getElementById("uiSpeakBtn").textContent = t('speak'); document.getElementById("uiListenBtn").textContent = t('listen'); document.getElementById("uiClearBtn").textContent = t('clear'); document.getElementById("uiHistBtn").textContent = t('history'); document.getElementById("uiListenBtn2").textContent = t('listen'); document.getElementById("uiCopyBtn").textContent = t('copy'); document.getElementById("uiSubBtn").textContent = t('subtitleBtn');
+    document.getElementById("translateBtn").textContent = t('translateBtn'); document.getElementById("uiClearHist").textContent = t('clearHistory'); document.getElementById("uiAutoTrans").textContent = t('autoTrans'); document.getElementById("uiFooter").textContent = t('footer');
+    document.getElementById("uiModalTitle").textContent = t('modalTitle'); document.getElementById("uiModalClose").textContent = t('modalClose'); document.getElementById("uiModalListen").textContent = t('modalListen');
+    document.getElementById("uiDownloadBtn").textContent = t('downloadBtn'); // Nova tradução do botão
+    updateCounts(); updateHistoryUI(); updateLangUI(); 
+  }
+  
+  uiLangSelect.value = state.uiLang; uiLangSelect.addEventListener("change", (e) => { state.uiLang = e.target.value; localStorage.setItem("linguavox-uilang", state.uiLang); applyLanguage(); });
   const langBy = (code) => LANGS.find(l => l.c === code) || LANGS[0];
   
-  function setStatus(text, isError = false) {
-    statusMsg.innerHTML = text;
-    statusMsg.className = `status-msg ${isError ? 'error' : ''}`;
-  }
-
-  function updateCounts() {
-    srcCount.textContent = `${srcText.value.length} caracteres`;
-    outCount.textContent = `${outText.value.length} caracteres`;
-  }
-
-  // Preencher Dropdowns
+  function setStatus(text, isError = false) { statusMsg.innerHTML = text; statusMsg.className = `status-msg ${isError ? 'error' : ''}`; }
+  function updateCounts() { srcCount.textContent = `${srcText.value.length} ${t('chars')}`; outCount.textContent = `${outText.value.length} ${t('chars')}`; }
+  
+  speedSlider.value = state.speed; speedValue.textContent = state.speed.toFixed(1) + "x";
+  speedSlider.addEventListener("input", (e) => { state.speed = parseFloat(e.target.value); speedValue.textContent = state.speed.toFixed(1) + "x"; localStorage.setItem("linguavox-speed", state.speed); });
+  
+  profileBtns.forEach(btn => {
+    if (btn.dataset.profile === state.audioProfile) btn.classList.add("active"); else btn.classList.remove("active");
+    btn.onclick = () => { state.audioProfile = btn.dataset.profile; profileBtns.forEach(b => b.classList.remove("active")); btn.classList.add("active"); localStorage.setItem("linguavox-audio-profile", state.audioProfile); };
+  });
+  
   function renderDropdowns() {
-    fromDropdown.innerHTML = "";
-    toDropdown.innerHTML = "";
-    
+    fromDropdown.innerHTML = ""; toDropdown.innerHTML = "";
     LANGS.forEach(l => {
-      const divF = document.createElement("div");
-      divF.className = `dropdown-item ${l.c === state.from ? 'active' : ''}`;
-      divF.innerHTML = `<span class="flag">${l.f}</span> ${l.n}`;
-      divF.onclick = () => {
-        state.from = l.c;
-        updateLangUI();
-        fromDropdown.classList.remove("active");
-        if (srcText.value.trim()) doTranslate();
-      };
-      fromDropdown.appendChild(divF);
-
-      const divT = document.createElement("div");
-      divT.className = `dropdown-item ${l.c === state.to ? 'active' : ''}`;
-      divT.innerHTML = `<span class="flag">${l.f}</span> ${l.n}`;
-      divT.onclick = () => {
-        state.to = l.c;
-        updateLangUI();
-        toDropdown.classList.remove("active");
-        if (srcText.value.trim()) doTranslate();
-      };
-      toDropdown.appendChild(divT);
+      const divF = document.createElement("div"); divF.className = `dropdown-item ${l.c === state.from ? 'active' : ''}`; divF.innerHTML = `<span class="flag">${l.f}</span> ${l.n}`;
+      divF.onclick = () => { state.from = l.c; updateLangUI(); fromDropdown.classList.remove("active"); if (srcText.value.trim()) doTranslate(); }; fromDropdown.appendChild(divF);
+      const divT = document.createElement("div"); divT.className = `dropdown-item ${l.c === state.to ? 'active' : ''}`; divT.innerHTML = `<span class="flag">${l.f}</span> ${l.n}`;
+      divT.onclick = () => { state.to = l.c; updateLangUI(); toDropdown.classList.remove("active"); if (srcText.value.trim()) doTranslate(); }; toDropdown.appendChild(divT);
     });
   }
-
+  
   function updateLangUI() {
-    const lFrom = langBy(state.from);
-    const lTo = langBy(state.to);
-    
-    fromFlag.textContent = lFrom.f;
-    fromName.textContent = lFrom.n;
-    fromChip.textContent = lFrom.n;
-    
-    toFlag.textContent = lTo.f;
-    toName.textContent = lTo.n;
-    toChip.textContent = lTo.n + " 100%";
-    
-    renderDropdowns();
-    localStorage.setItem("linguavox-from", state.from);
-    localStorage.setItem("linguavox-to", state.to);
+    const lFrom = langBy(state.from); const lTo = langBy(state.to);
+    fromFlag.textContent = lFrom.f; fromName.textContent = lFrom.n; fromChip.textContent = lFrom.n;
+    toFlag.textContent = lTo.f; toName.textContent = lTo.n; 
+    toChip.textContent = lTo.n + " " + t('detected');
+    renderDropdowns(); localStorage.setItem("linguavox-from", state.from); localStorage.setItem("linguavox-to", state.to);
   }
+  
+  document.getElementById("fromBtn").onclick = (e) => { e.stopPropagation(); fromDropdown.classList.toggle("active"); toDropdown.classList.remove("active"); historyPanel.classList.remove("active"); };
+  document.getElementById("toBtn").onclick = (e) => { e.stopPropagation(); toDropdown.classList.toggle("active"); fromDropdown.classList.remove("active"); historyPanel.classList.remove("active"); };
+  document.addEventListener("click", (e) => { if (!e.target.closest('#fromContainer') && !e.target.closest('#toContainer')) { fromDropdown.classList.remove("active"); toDropdown.classList.remove("active"); } if (!e.target.closest('#histBtn') && !e.target.closest('#historyPanel')) { historyPanel.classList.remove("active"); } });
+  document.getElementById("swapBtn").onclick = () => { const temp = state.from; state.from = state.to; state.to = temp; const tempText = srcText.value; srcText.value = outText.value; outText.value = tempText; updateLangUI(); updateCounts(); if (srcText.value.trim()) doTranslate(); };
 
-  // Controle dos Dropdowns
-  document.getElementById("fromBtn").onclick = (e) => {
-    e.stopPropagation();
-    fromDropdown.classList.toggle("active");
-    toDropdown.classList.remove("active");
-    historyPanel.classList.remove("active");
-  };
-  document.getElementById("toBtn").onclick = (e) => {
-    e.stopPropagation();
-    toDropdown.classList.toggle("active");
-    fromDropdown.classList.remove("active");
-    historyPanel.classList.remove("active");
-  };
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest('#fromContainer') && !e.target.closest('#toContainer')) {
-      fromDropdown.classList.remove("active");
-      toDropdown.classList.remove("active");
-    }
-    if (!e.target.closest('#histBtn') && !e.target.closest('#historyPanel')) {
-      historyPanel.classList.remove("active");
-    }
-  });
-
-  // Swap de Idiomas
-  document.getElementById("swapBtn").onclick = () => {
-    const temp = state.from;
-    state.from = state.to;
-    state.to = temp;
-    
-    const tempText = srcText.value;
-    srcText.value = outText.value;
-    outText.value = tempText;
-    
-    updateLangUI();
-    updateCounts();
-    if (srcText.value.trim()) doTranslate();
-  };
-
-  // APIs de Tradução
   async function translateGoogle(text, from, to) {
     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Google API Error");
-    const data = await res.json();
-    return data[0].map(x => x[0]).join("");
+    const res = await fetch(url); if (!res.ok) throw new Error("Google API Error"); const data = await res.json(); return data[0].map(x => x[0]).join("");
   }
-
   async function translateMyMemory(text, from, to) {
     const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("MyMemory API Error");
-    const data = await res.json();
-    if (data.responseData && data.responseData.translatedText) return data.responseData.translatedText;
-    throw new Error("Tradução vazia");
+    const res = await fetch(url); if (!res.ok) throw new Error("MyMemory API Error"); const data = await res.json(); if (data.responseData && data.responseData.translatedText) return data.responseData.translatedText; throw new Error("Tradução vazia");
+  }
+
+  const LINGVA_INSTANCES = [
+    "https://lingva.ml/api/v1",
+    "https://lingva.garudalinux.org/api/v1",
+    "https://translate.plausibility.cloud/api/v1",
+    "https://lingva.lunar.icu/api/v1"
+  ];
+
+  async function translateLingva(text, from, to) {
+    for (const base of LINGVA_INSTANCES) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 2000);
+        const url = `${base}/${from}/${to}/${encodeURIComponent(text)}`;
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data && data.translation) return data.translation;
+      } catch(e) { continue; }
+    }
+    throw new Error("Todas instâncias Lingva falharam");
   }
 
   async function robustTranslate(text, from, to) {
     if (!text.trim()) return "";
-    try { return await translateGoogle(text, from, to); } catch (e) { console.warn("Google falhou..."); }
-    try { return await translateMyMemory(text, from, to); } catch (e) { console.warn("MyMemory falhou."); }
-    throw new Error("Motores de tradução falharam.");
+    try { return await translateGoogle(text, from, to); } catch(e) {}
+    try { return await translateMyMemory(text, from, to); } catch(e) {}
+    try { return await translateLingva(text, from, to); } catch(e) {}
+    throw new Error("Todos os motores falharam.");
   }
 
-  // Ação Principal
   let isTranslating = false;
   async function doTranslate() {
-    const text = srcText.value.trim();
-    if (!text) {
-      outText.value = "";
-      updateCounts();
-      setStatus("Digite algo para traduzir.");
-      return;
-    }
-    if (isTranslating) return;
-    
-    isTranslating = true;
-    translateBtn.disabled = true;
-    translateBtn.textContent = "TRADUZINDO...";
-    setStatus("Traduzindo...");
-
+    const text = srcText.value.trim(); if (!text) { outText.value = ""; updateCounts(); setStatus(t('srcPlaceholder')); return; } if (isTranslating) return;
+    isTranslating = true; translateBtn.disabled = true; translateBtn.textContent = t('translatingBtn'); setStatus(t('statusTranslating'));
     try {
-      const result = await robustTranslate(text, state.from, state.to);
-      outText.value = result;
-      updateCounts();
-      
-      setStatus("✓ Traduzido com sucesso", false);
-      
-      state.history.unshift({ src: text, out: result, at: Date.now() });
-      if (state.history.length > 30) state.history.pop();
-      localStorage.setItem("linguavox-h", JSON.stringify(state.history));
-      localStorage.setItem("linguavox-src", text);
-      localStorage.setItem("linguavox-out", result);
-      updateHistoryUI();
-      
-    } catch (error) {
-      setStatus("Erro na tradução. Verifique a conexão.", true);
-    } finally {
-      isTranslating = false;
-      translateBtn.disabled = false;
-      translateBtn.textContent = "TRADUZIR AGORA";
-    }
+      const result = await robustTranslate(text, state.from, state.to); outText.value = result; updateCounts(); setStatus(t('statusSuccess'), false);
+      state.history.unshift({ src: text, out: result, at: Date.now() }); if (state.history.length > 30) state.history.pop();
+      localStorage.setItem("linguavox-h", JSON.stringify(state.history)); localStorage.setItem("linguavox-src", text); localStorage.setItem("linguavox-out", result); updateHistoryUI();
+    } catch (error) { setStatus(t('statusError'), true); } finally { isTranslating = false; translateBtn.disabled = false; translateBtn.textContent = t('translateBtn'); }
   }
-
   translateBtn.onclick = doTranslate;
-
-  // Textarea Input
-  srcText.addEventListener("input", () => {
-    updateCounts();
-    clearTimeout(window._typingTimer);
-    window._typingTimer = setTimeout(() => {
-      if (srcText.value.trim().length >= 3) doTranslate();
-    }, 1200);
-  });
-
-  srcText.addEventListener("keydown", (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") doTranslate();
-  });
-
-  document.getElementById("clearBtn").onclick = () => {
-    srcText.value = "";
-    outText.value = "";
-    updateCounts();
-    setStatus("");
-    srcText.focus();
-  };
-
-  document.getElementById("copyBtn").onclick = async () => {
-    if (!outText.value) return;
-    try {
-      await navigator.clipboard.writeText(outText.value);
-      setStatus("✓ Copiado!");
-      setTimeout(() => setStatus(""), 2000);
-    } catch (e) {
-      outText.select();
-      document.execCommand("copy");
-      setStatus("✓ Copiado!");
-      setTimeout(() => setStatus(""), 2000);
-    }
-  };
-
-  // TTS (Voz Suave)
+  srcText.addEventListener("input", () => { updateCounts(); clearTimeout(window._typingTimer); window._typingTimer = setTimeout(() => { if (srcText.value.trim().length >= 3) doTranslate(); }, 1200); });
+  srcText.addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") doTranslate(); });
+  document.getElementById("clearBtn").onclick = () => { srcText.value = ""; outText.value = ""; updateCounts(); setStatus(""); srcText.focus(); };
+  document.getElementById("copyBtn").onclick = async () => { if (!outText.value) return; try { await navigator.clipboard.writeText(outText.value); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } catch (e) { outText.select(); document.execCommand("copy"); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } };
+  
+  function getBestVoice(langCode, profile) {
+    const voices = speechSynthesis.getVoices(); let targetLocales = specialLocales[langCode] || [localeMap[langCode] || langCode]; let available = [];
+    for (let code of targetLocales) { available = voices.filter(v => v.lang.toLowerCase().replace('_', '-') === code.toLowerCase()); if (available.length > 0) break; }
+    if (available.length === 0) { let prefix = (targetLocales[0] || langCode).split('-')[0].toLowerCase(); available = voices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith(prefix)); }
+    if (available.length === 0) return null;
+    const maleKeywords = ['daniel', 'felipe', 'alex', 'david', 'mark', 'jorge', 'thomas', 'diego']; const femaleKeywords = ['luciana', 'samantha', 'monica', 'paulina', 'amelie', 'karen', 'zira', 'victoria', 'maria', 'joana', 'francisca']; const premiumKeywords = ['natural', 'neural', 'google', 'microsoft', 'siri', 'wavenet', 'online'];
+    let bestVoice = null; if (profile === 'grave') { bestVoice = available.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k))); } else { bestVoice = available.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k))); }
+    if (!bestVoice) { bestVoice = available.find(v => premiumKeywords.some(p => v.name.toLowerCase().includes(p))); }
+    return bestVoice || available[0];
+  }
+  
   function speak(text, langCode) {
-    if (!text.trim()) return;
-    if (!("speechSynthesis" in window)) {
-      setStatus("Áudio não suportado neste navegador.", true);
-      return;
-    }
-    
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voices = speechSynthesis.getVoices();
-    
-    let targetCode = langCode;
-    if (langCode === "pt") targetCode = "pt-BR";
-    else if (langCode === "en") targetCode = "en-US";
-    
-    const voice = voices.find(v => v.lang.startsWith(targetCode)) || voices.find(v => v.lang.startsWith(langCode));
-    
-    if (voice) utterance.voice = voice;
-    utterance.lang = voice ? voice.lang : targetCode;
-    
-    utterance.rate = 0.95;
-    utterance.pitch = 1.1; 
-    
-    speechSynthesis.speak(utterance);
-    setStatus("🔊 Reproduzindo áudio...");
-    utterance.onend = () => setStatus("");
+    if (!text.trim()) return; if (!("speechSynthesis" in window)) { setStatus(t('statusError'), true); return; }
+    speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); let finalLang = (specialLocales[langCode] && specialLocales[langCode][0]) || localeMap[langCode] || langCode; utterance.lang = finalLang;
+    const voice = getBestVoice(langCode, state.audioProfile); if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
+    if (state.audioProfile === 'grave') { utterance.pitch = 0.8; } else { utterance.pitch = 1.05; }
+    utterance.rate = state.speed; speechSynthesis.speak(utterance); setStatus("🔊 ..."); utterance.onend = () => setStatus(""); utterance.onerror = (e) => { setStatus(t('statusError'), true); setTimeout(() => setStatus(""), 3000); };
   }
-
-  document.getElementById("speakSrcBtn").onclick = () => speak(srcText.value, state.from);
-  document.getElementById("speakOutBtn").onclick = () => speak(outText.value, state.to);
-
-  // ==========================================
-  // HISTÓRICO
-  // ==========================================
+  
+  document.getElementById("speakSrcBtn").onclick = () => speak(srcText.value, state.from); document.getElementById("speakOutBtn").onclick = () => speak(outText.value, state.to);
+  
   function updateHistoryUI() {
-    histCount.textContent = state.history.length;
-    historyList.innerHTML = "";
-    
-    if (state.history.length === 0) {
-      historyList.innerHTML = '<div style="text-align:center; font-size:12px; color:var(--text-muted); padding:10px;">Nenhum histórico recente.</div>';
-      return;
-    }
-
-    state.history.forEach((item, index) => {
-      const div = document.createElement("div");
-      div.className = "history-item";
-      div.innerHTML = `<strong>${item.src}</strong><span>${item.out}</span>`;
-      div.onclick = () => {
-        srcText.value = item.src;
-        outText.value = item.out;
-        updateCounts();
-        historyPanel.classList.remove("active");
-        setStatus("Histórico recuperado.");
-        setTimeout(() => setStatus(""), 2000);
-      };
-      historyList.appendChild(div);
-    });
+    histCount.textContent = state.history.length; historyList.innerHTML = "";
+    if (state.history.length === 0) { historyList.innerHTML = `<div style="text-align:center; font-size:12px; color:var(--text-muted); padding:10px;">${t('noHistory')}</div>`; return; }
+    state.history.forEach((item) => { const div = document.createElement("div"); div.className = "history-item"; div.innerHTML = `<strong>${item.src}</strong><span>${item.out}</span>`; div.onclick = () => { srcText.value = item.src; outText.value = item.out; updateCounts(); historyPanel.classList.remove("active"); setStatus(t('statusRecovered')); setTimeout(() => setStatus(""), 2000); }; historyList.appendChild(div); });
   }
-
-  document.getElementById("histBtn").onclick = (e) => {
-    e.stopPropagation();
-    historyPanel.classList.toggle("active");
-    fromDropdown.classList.remove("active");
-    toDropdown.classList.remove("active");
-  };
-
-  clearHistBtn.onclick = (e) => {
-    e.stopPropagation();
-    state.history = [];
-    localStorage.removeItem("linguavox-h");
-    updateHistoryUI();
-    setStatus("Histórico limpo.", false);
-    setTimeout(() => setStatus(""), 2000);
-  };
-
-  // Legenda Overlay
-  const overlay = document.getElementById("overlay");
-  document.getElementById("subBtn").onclick = () => {
-    if (!outText.value) {
-      setStatus("Traduza algo primeiro.", true);
-      return;
-    }
-    document.getElementById("ovSrc").textContent = srcText.value;
-    document.getElementById("ovOut").textContent = outText.value;
-    overlay.classList.add("active");
+  
+  document.getElementById("histBtn").onclick = (e) => { e.stopPropagation(); historyPanel.classList.toggle("active"); fromDropdown.classList.remove("active"); toDropdown.classList.remove("active"); };
+  document.getElementById("clearHistBtn").onclick = (e) => { e.stopPropagation(); state.history = []; localStorage.removeItem("linguavox-h"); updateHistoryUI(); setStatus(t('statusCleared'), false); setTimeout(() => setStatus(""), 2000); };
+  
+  const overlay = document.getElementById("overlay"); 
+  document.getElementById("subBtn").onclick = () => { 
+    if (!outText.value) { setStatus(t('srcPlaceholder'), true); return; } 
+    document.getElementById("ovSrc").textContent = srcText.value; 
+    document.getElementById("ovOut").textContent = outText.value; 
+    overlay.classList.add("active"); 
   };
   
-  document.getElementById("ovClose").onclick = () => overlay.classList.remove("active");
-  document.getElementById("ovPlay").onclick = () => speak(outText.value, state.to);
+  document.getElementById("ovClose").onclick = () => overlay.classList.remove("active"); 
+  document.getElementById("ovPlay").onclick = () => speak(outText.value, state.to); 
   overlay.onclick = (e) => { if (e.target === overlay) overlay.classList.remove("active"); };
 
-  // ==========================================
-  // RECONHECIMENTO DE VOZ (Botão Falar)
-  // ==========================================
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let recognition = null;
-  let isListening = false;
-  
-  // HTML do ícone normal vs gravando
-  const micIconHTML = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>`;
-  const micListeningHTML = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line><rect x="8" y="4" width="8" height="10" rx="4" fill="currentColor" opacity="0.3"></rect></svg>`;
+  // NOVA FUNÇÃO: Download do Áudio em MP3
+  document.getElementById("ovDownload").onclick = () => {
+    let text = outText.value.trim();
+    if (!text) text = srcText.value.trim();
+    if (!text) return;
 
-  if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    recognition.onstart = () => {
-      isListening = true;
-      micBtn.classList.add("listening");
-      micBtn.innerHTML = `${micListeningHTML} Ouvindo...`;
-      setStatus("Ouvindo... Fale agora.");
-    };
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      srcText.value = transcript;
-      updateCounts();
-      doTranslate();
-    };
-
-    recognition.onerror = (event) => {
-      console.error(event.error);
-      isListening = false;
-      micBtn.classList.remove("listening");
-      micBtn.innerHTML = `${micIconHTML} Falar`;
-      
-      if (event.error === 'not-allowed') {
-        setStatus("Permissão de microfone negada.", true);
-      } else if (event.error === 'no-speech') {
-        setStatus("Nenhuma fala detectada.", true);
-      } else {
-        setStatus("Erro no microfone.", true);
-      }
-      setTimeout(() => setStatus(""), 3000);
-    };
-
-    recognition.onend = () => {
-      isListening = false;
-      micBtn.classList.remove("listening");
-      micBtn.innerHTML = `${micIconHTML} Falar`;
-      if (statusMsg.textContent === "Ouvindo... Fale agora.") {
-        setStatus("");
-      }
-    };
-  } else {
-    micBtn.onclick = () => setStatus("Reconhecimento de voz não suportado.", true);
-  }
-
-  micBtn.onclick = () => {
-    if (!recognition) return;
-    
-    if (isListening) {
-      recognition.stop();
-    } else {
-      let recLang = state.from;
-      if (state.from === 'pt') recLang = 'pt-BR';
-      else if (state.from === 'en') recLang = 'en-US';
-      else if (state.from === 'es') recLang = 'es-ES';
-      else if (state.from === 'fr') recLang = 'fr-FR';
-      
-      recognition.lang = recLang;
-      try {
-        recognition.start();
-      } catch(e) {
-        recognition.stop();
-      }
+    // O limite do endpoint TTS do Google é de aproximadamente 200 caracteres
+    if (text.length > 200) {
+      text = text.substring(0, 197) + "...";
     }
+
+    const lang = state.to; // Usa o idioma de destino
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=tw-ob`;
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `LinguaVox_Audio_${lang}.mp3`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setStatus(t('statusDownloading') || "Preparando download...");
+    setTimeout(() => setStatus(""), 3000);
   };
-
-  // Inicialização
-  function init() {
-    updateLangUI();
-    updateHistoryUI();
-    
-    const savedSrc = localStorage.getItem("linguavox-src");
-    const savedOut = localStorage.getItem("linguavox-out");
-    if (savedSrc) srcText.value = savedSrc;
-    if (savedOut) outText.value = savedOut;
-    updateCounts();
-    
-    if ("speechSynthesis" in window) {
-      speechSynthesis.getVoices();
-      setTimeout(() => speechSynthesis.getVoices(), 500);
-    }
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; let recognition = null; let isListening = false;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition(); recognition.continuous = false; recognition.interimResults = false;
+    recognition.onstart = () => { isListening = true; micBtn.classList.add("listening"); setStatus(t('statusListening')); };
+    recognition.onresult = (event) => { const transcript = event.results[0][0].transcript; srcText.value = transcript; updateCounts(); doTranslate(); };
+    recognition.onerror = (event) => { isListening = false; micBtn.classList.remove("listening"); if (event.error === 'not-allowed') { setStatus(t('statusMicDenied'), true); } else if (event.error === 'no-speech') { setStatus(t('statusNoSpeech'), true); } else { setStatus(t('statusMicError'), true); } setTimeout(() => setStatus(""), 3000); };
+    recognition.onend = () => { isListening = false; micBtn.classList.remove("listening"); if (statusMsg.textContent === t('statusListening')) { setStatus(""); } };
   }
-
+  micBtn.onclick = () => { if (!recognition) { setStatus(t('statusMicUnsupported'), true); return; } if (isListening) { recognition.stop(); } else { let recLang = (specialLocales[state.from] && specialLocales[state.from][0]) || localeMap[state.from] || state.from; recognition.lang = recLang; try { recognition.start(); } catch(e) { recognition.stop(); } } };
+  
+  function init() { applyLanguage(); updateLangUI(); updateHistoryUI(); const savedSrc = localStorage.getItem("linguavox-src"); const savedOut = localStorage.getItem("linguavox-out"); if (savedSrc) srcText.value = savedSrc; if (savedOut) outText.value = savedOut; updateCounts(); if ("speechSynthesis" in window) { speechSynthesis.getVoices(); setTimeout(() => speechSynthesis.getVoices(), 500); } }
   init();
 </script>
 </body>
