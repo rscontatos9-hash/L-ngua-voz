@@ -204,15 +204,15 @@
   </header>
   
   <div class="lang-bar">
-    <div class="sel-container" id="fromContainer"><button class="lang-btn" id="fromBtn"><span class="flag" id="fromFlag">🇧🇷</span><span id="fromName">Português</span></button><div class="dropdown" id="fromDropdown"></div></div>
-    <button class="swap-btn" id="swapBtn">⇅</button>
-    <div class="sel-container" id="toContainer"><button class="lang-btn" id="toBtn"><span class="flag" id="toFlag">🇺🇸</span><span id="toName">Inglês</span></button><div class="dropdown" id="toDropdown"></div></div>
+    <div class="sel-container" id="fromContainer"><button type="button" class="lang-btn" id="fromBtn"><span class="flag" id="fromFlag">🇧🇷</span><span id="fromName">Português</span></button><div class="dropdown" id="fromDropdown"></div></div>
+    <button type="button" class="swap-btn" id="swapBtn">⇅</button>
+    <div class="sel-container" id="toContainer"><button type="button" class="lang-btn" id="toBtn"><span class="flag" id="toFlag">🇺🇸</span><span id="toName">Inglês</span></button><div class="dropdown" id="toDropdown"></div></div>
   </div>
   
   <div class="audio-settings">
     <div class="profile-buttons">
-      <button class="profile-btn active" data-profile="normal"><span id="uiNormalTone">Tom Normal</span></button>
-      <button class="profile-btn" data-profile="grave"><span id="uiDeepTone">Tom Grave</span></button>
+      <button type="button" class="profile-btn active" data-profile="normal"><span id="uiNormalTone">Tom Normal</span></button>
+      <button type="button" class="profile-btn" data-profile="grave"><span id="uiDeepTone">Tom Grave</span></button>
     </div>
     <div class="speed-control"><label id="uiSpeed">Velocidade</label><input type="range" id="speedSlider" min="0.5" max="1.5" step="0.1" value="1.0"><span id="speedValue">1.0x</span></div>
     
@@ -238,19 +238,19 @@
     <textarea id="srcText" placeholder="Digite ou fale algo..."></textarea>
     
     <div class="action-grid">
-      <button class="action-btn" id="micBtn">
+      <button type="button" class="action-btn" id="micBtn">
         <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
         <span id="uiSpeakBtn">Falar</span>
       </button>
-      <button class="action-btn" id="speakSrcBtn">
+      <button type="button" class="action-btn" id="speakSrcBtn">
         <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
         <span id="uiListenBtn">Ouvir</span>
       </button>
-      <button class="action-btn" id="clearBtn"><span id="uiClearBtn">Limpar</span></button>
-      <button class="action-btn" id="histBtn"><span id="uiHistBtn">Histórico</span> (<span id="histCount">0</span>)</button>
+      <button type="button" class="action-btn" id="clearBtn"><span id="uiClearBtn">Limpar</span></button>
+      <button type="button" class="action-btn" id="histBtn"><span id="uiHistBtn">Histórico</span> (<span id="histCount">0</span>)</button>
     </div>
     
-    <div class="history-panel" id="historyPanel"><div class="history-list" id="historyList"></div><button class="clear-hist-btn" id="clearHistBtn"><span id="uiClearHist">Limpar Histórico</span></button></div>
+    <div class="history-panel" id="historyPanel"><div class="history-list" id="historyList"></div><button type="button" class="clear-hist-btn" id="clearHistBtn"><span id="uiClearHist">Limpar Histórico</span></button></div>
     <div class="panel-footer"><span id="srcCount">0 caracteres</span><span>Ctrl+Enter</span></div>
   </div>
   
@@ -259,17 +259,17 @@
     <textarea id="outText" placeholder="A tradução aparecerá aqui..." readonly></textarea>
     
     <div class="action-grid action-grid-3">
-      <button class="action-btn" id="speakOutBtn">
+      <button type="button" class="action-btn" id="speakOutBtn">
         <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
         <span id="uiListenBtn2">Ouvir</span>
       </button>
-      <button class="action-btn" id="copyBtn"><span id="uiCopyBtn">Copiar</span></button>
-      <button class="action-btn" id="subBtn"><span id="uiSubBtn">Legenda</span></button>
+      <button type="button" class="action-btn" id="copyBtn"><span id="uiCopyBtn">Copiar</span></button>
+      <button type="button" class="action-btn" id="subBtn"><span id="uiSubBtn">Legenda</span></button>
     </div>
     <div class="panel-footer"><span id="outCount">0 caracteres</span><span id="uiAutoTrans">Tradução automática</span></div>
   </div>
 
-  <button class="main-btn" id="translateBtn">TRADUZIR AGORA</button>
+  <button type="button" class="main-btn" id="translateBtn">TRADUZIR AGORA</button>
   <div class="status-msg" id="statusMsg"></div>
   
   <div class="app-footer">
@@ -284,14 +284,14 @@
     <small id="ovSrc"></small>
     <p id="ovOut"></p>
     <div class="action-grid">
-      <button class="action-btn" id="ovClose"><span id="uiModalClose">Fechar</span></button>
-      <button class="action-btn" style="background: var(--accent); color: white; border: none;" id="ovPlay">
+      <button type="button" class="action-btn" id="ovClose"><span id="uiModalClose">Fechar</span></button>
+      <button type="button" class="action-btn" style="background: var(--accent); color: white; border: none;" id="ovPlay">
         <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
         <span id="uiModalListen">Ouvir</span>
       </button>
     </div>
     <div class="action-grid" style="margin-top: 10px;">
-      <button class="action-btn" id="ovDownload" style="grid-column: span 2; background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1);">
+      <button type="button" class="action-btn" id="ovDownload" style="grid-column: span 2; background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1);">
         <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         <span id="uiDownloadBtn">Baixar Áudio MP3</span>
       </button>
@@ -448,148 +448,182 @@
   document.getElementById("clearBtn").onclick = () => { srcText.value = ""; outText.value = ""; updateCounts(); setStatus(""); srcText.focus(); };
   document.getElementById("copyBtn").onclick = async () => { if (!outText.value) return; try { await navigator.clipboard.writeText(outText.value); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } catch (e) { outText.select(); document.execCommand("copy"); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } };
   
-  // --- SISTEMA DE VOZ NEURAL CORRIGIDO (PREVENÇÃO DE ÁUDIO DUPLICADO) ---
+  // --- SISTEMA DE VOZ NEURAL ROBUSTO (ANTI-REPETIÇÃO E COM CONTROLE DE PARADA) ---
+  let currentPlayId = 0;
+  let isSpeaking = false;
   let currentAudio = null;
   let repeatTimeout = null;
-  let currentPlayId = 0; // Controla a sessão de áudio para evitar sobreposição
 
-  async function speak(text, langCode, repeat = 1) {
-    if (!text.trim() || repeat <= 0) return; 
-    
-    // 1. Cancela qualquer áudio, timeout ou fala anterior
+  function stopAllAudio() {
     currentPlayId++;
-    const myPlayId = currentPlayId;
-
+    isSpeaking = false;
     if (repeatTimeout) clearTimeout(repeatTimeout);
     if (currentAudio) {
       currentAudio.pause();
       currentAudio.onended = null;
       currentAudio.onerror = null;
+      currentAudio.currentTime = 0;
       currentAudio = null;
     }
     speechSynthesis.cancel();
+    setStatus("");
+  }
+
+  async function speak(text, langCode, repeat = 1) {
+    if (!text.trim() || repeat <= 0) return;
+
+    // Se já estiver falando, o clique funciona como um botão de parar (Stop)
+    if (isSpeaking) {
+      stopAllAudio();
+      return;
+    }
+
+    stopAllAudio();
+    isSpeaking = true;
+    const myPlayId = currentPlayId;
 
     const iterationMsg = repeat > 1 ? ` (${repeat}x)` : "";
     setStatus(`🔊 Carregando...${iterationMsg}`);
 
-    // Função auxiliar para tocar a tag <audio> e gerenciar o término
     const playAudioElement = (url) => {
-      if (myPlayId !== currentPlayId) return; // Aborta se uma nova solicitação já começou
+      return new Promise((resolve, reject) => {
+        if (myPlayId !== currentPlayId) return reject('cancelled');
+        currentAudio = new Audio(url);
+        let hasStarted = false;
+        let hasEnded = false;
 
-      currentAudio = new Audio(url);
-      currentAudio.onplay = () => {
-        if (myPlayId === currentPlayId) setStatus(`🔊 Reproduzindo...${iterationMsg}`);
-      };
-      currentAudio.onended = () => {
-        if (myPlayId !== currentPlayId) return;
-        setStatus("");
-        currentAudio = null;
-        if (repeat > 1) {
-          repeatTimeout = setTimeout(() => {
-            if (myPlayId === currentPlayId) speak(text, langCode, repeat - 1);
-          }, 500);
-        }
-      };
-      currentAudio.onerror = () => {
-        if (myPlayId !== currentPlayId) return;
-        currentAudio = null;
-        playBrowserVoice(text, langCode, state.audioProfile === 'grave' ? 0.8 : 1.05, repeat, myPlayId);
-      };
+        currentAudio.onplay = () => {
+          if (myPlayId !== currentPlayId) return reject('cancelled');
+          hasStarted = true;
+          setStatus(`🔊 Reproduzindo...${iterationMsg}`);
+        };
 
-      currentAudio.play().catch(e => {
-        if (myPlayId !== currentPlayId) return;
-        currentAudio = null;
-        playBrowserVoice(text, langCode, state.audioProfile === 'grave' ? 0.8 : 1.05, repeat, myPlayId);
+        currentAudio.onended = () => {
+          if (hasEnded || myPlayId !== currentPlayId) return;
+          hasEnded = true;
+          currentAudio = null;
+          resolve();
+        };
+
+        currentAudio.onerror = () => {
+          if (hasStarted || myPlayId !== currentPlayId) return reject('error');
+          currentAudio = null;
+          reject('error');
+        };
+
+        currentAudio.play().catch(e => {
+          if (hasStarted || myPlayId !== currentPlayId) return reject('error');
+          currentAudio = null;
+          reject('error');
+        });
       });
     };
 
-    // 2. Tenta Tom Grave (Nativo do Navegador)
-    if (state.audioProfile === 'grave') {
-      playBrowserVoice(text, langCode, 0.8, repeat, myPlayId);
-      return;
-    }
+    const playBrowserVoice = () => {
+      return new Promise((resolve, reject) => {
+        if (myPlayId !== currentPlayId) return reject('cancelled');
+        if (!("speechSynthesis" in window)) { setStatus(t('statusError'), true); return reject('unsupported'); }
 
-    // 3. Tenta Voz Neural Microsoft (Melhor qualidade)
-    if (window.EdgeTTS) {
-      try {
-        const targetLang = (localeMap[langCode] || langCode).toLowerCase();
-        const langPrefix = targetLang.split('-')[0];
-        const voices = await window.EdgeTTS.listVoices();
-        const femaleVoice = voices.find(v => v.Gender === 'Female' && v.Locale.toLowerCase().startsWith(langPrefix));
+        const utterance = new SpeechSynthesisUtterance(text);
+        let finalLang = (specialLocales[langCode] && specialLocales[langCode][0]) || localeMap[langCode] || langCode;
+        utterance.lang = finalLang;
+
+        const voices = speechSynthesis.getVoices();
+        let available = voices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith(finalLang.split('-')[0].toLowerCase()));
+
+        const femaleKeywords = ['luciana', 'samantha', 'monica', 'paulina', 'amelie', 'karen', 'zira', 'victoria', 'maria', 'joana', 'female', 'mulher', 'feminino', 'francisca'];
+        const femaleVoice = available.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
 
         if (femaleVoice) {
-          const url = await window.EdgeTTS.Communicate(text, { voice: femaleVoice.Name });
-          if (myPlayId === currentPlayId) {
-            playAudioElement(url);
-            return;
+          utterance.voice = femaleVoice;
+        } else if (available.length > 0) {
+          utterance.voice = available[0];
+        }
+
+        utterance.pitch = state.audioProfile === 'grave' ? 0.8 : 1.05;
+        utterance.rate = state.speed;
+
+        let hasEnded = false;
+        utterance.onend = () => {
+          if (hasEnded || myPlayId !== currentPlayId) return;
+          hasEnded = true;
+          resolve();
+        };
+        utterance.onerror = (e) => {
+          if (hasEnded || myPlayId !== currentPlayId) return;
+          hasEnded = true;
+          reject('error');
+        };
+
+        setStatus(`🔊 Reproduzindo...${iterationMsg}`);
+        speechSynthesis.speak(utterance);
+      });
+    };
+
+    try {
+      if (state.audioProfile === 'grave') {
+        await playBrowserVoice();
+      } else {
+        let played = false;
+        if (window.EdgeTTS) {
+          try {
+            const targetLang = (localeMap[langCode] || langCode).toLowerCase();
+            const langPrefix = targetLang.split('-')[0];
+            const voices = await window.EdgeTTS.listVoices();
+            if (myPlayId !== currentPlayId) throw new Error('cancelled');
+            
+            const femaleVoice = voices.find(v => v.Gender === 'Female' && v.Locale.toLowerCase().startsWith(langPrefix));
+
+            if (femaleVoice) {
+              const url = await window.EdgeTTS.Communicate(text, { voice: femaleVoice.Name });
+              if (myPlayId !== currentPlayId) throw new Error('cancelled');
+              await playAudioElement(url);
+              played = true;
+            }
+          } catch (e) {
+            if (myPlayId !== currentPlayId) throw e;
+            console.warn("EdgeTTS falhou, usando reserva...", e);
           }
         }
-      } catch (e) {
-        console.warn("EdgeTTS falhou, usando fallback.", e);
+
+        if (!played && myPlayId === currentPlayId) {
+          if (text.length <= 200) {
+            try {
+              const apiLang = langCode.split('-')[0];
+              const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${apiLang}&client=tw-ob`;
+              await playAudioElement(url);
+              played = true;
+            } catch (e) {
+              if (myPlayId !== currentPlayId) throw e;
+              console.warn("Google TTS falhou, usando reserva...", e);
+            }
+          }
+        }
+
+        if (!played && myPlayId === currentPlayId) {
+          await playBrowserVoice();
+        }
+      }
+
+      // Reprodução concluída com sucesso
+      if (myPlayId === currentPlayId) {
+        isSpeaking = false;
+        setStatus("");
+        if (repeat > 1) {
+          repeatTimeout = setTimeout(() => {
+            if (myPlayId === currentPlayId) speak(text, langCode, repeat - 1);
+          }, 600);
+        }
+      }
+    } catch (error) {
+      if (myPlayId === currentPlayId) {
+        if (error !== 'cancelled') {
+          setStatus(t('statusError'), true);
+          setTimeout(() => setStatus(""), 3000);
+        }
+        isSpeaking = false;
       }
     }
-
-    if (myPlayId !== currentPlayId) return;
-
-    // 4. Tenta Google TTS (Fallback)
-    if (text.length <= 200) {
-      try {
-        const apiLang = langCode.split('-')[0];
-        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${apiLang}&client=tw-ob`;
-        playAudioElement(url);
-        return;
-      } catch (e) {
-        console.warn("Google TTS falhou.", e);
-      }
-    }
-
-    if (myPlayId !== currentPlayId) return;
-
-    // 5. Fallback final (Voz nativa do celular)
-    playBrowserVoice(text, langCode, 1.05, repeat, myPlayId);
-  }
-
-  function playBrowserVoice(text, langCode, pitchValue, repeat, playId) {
-    if (playId !== currentPlayId) return;
-    if (!("speechSynthesis" in window)) { setStatus(t('statusError'), true); return; }
-    
-    const utterance = new SpeechSynthesisUtterance(text); 
-    let finalLang = (specialLocales[langCode] && specialLocales[langCode][0]) || localeMap[langCode] || langCode; 
-    utterance.lang = finalLang;
-    
-    const voices = speechSynthesis.getVoices();
-    let available = voices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith(finalLang.split('-')[0].toLowerCase()));
-    
-    const femaleKeywords = ['luciana', 'samantha', 'monica', 'paulina', 'amelie', 'karen', 'zira', 'victoria', 'maria', 'joana', 'female', 'mulher', 'feminino', 'francisca'];
-    const femaleVoice = available.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
-    
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
-    } else if (available.length > 0) {
-      utterance.voice = available[0];
-    }
-    
-    utterance.pitch = pitchValue; 
-    utterance.rate = state.speed; 
-    
-    const iterationMsg = repeat > 1 ? ` (${repeat}x)` : "";
-    setStatus(`🔊 Reproduzindo...${iterationMsg}`); 
-    
-    utterance.onend = () => { 
-      if (playId !== currentPlayId) return;
-      setStatus(""); 
-      if (repeat > 1) {
-        repeatTimeout = setTimeout(() => {
-          if (playId === currentPlayId) speak(text, langCode, repeat - 1);
-        }, 500);
-      }
-    }; 
-    utterance.onerror = (e) => { 
-      if (playId !== currentPlayId) return;
-      setStatus(t('statusError'), true); setTimeout(() => setStatus(""), 3000); 
-    };
-    
-    speechSynthesis.speak(utterance); 
   }
   // --- FIM DO SISTEMA DE VOZ ---
   
