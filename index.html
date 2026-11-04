@@ -34,8 +34,6 @@
   }
   
   .header { text-align: center; margin-bottom: 8px; }
-  
-  /* Top Bar: Menu e Badge mais alinhados */
   .top-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
   
   .badge { 
@@ -60,7 +58,6 @@
   }
   
   .subtitle { color: var(--text-muted); font-size: 13px; line-height: 1.5; padding: 0 20px; text-align: center; margin: 0 auto; }
-  
   .lang-bar { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
   
   .lang-btn { 
@@ -85,7 +82,7 @@
   .profile-btn { 
     flex: 1; background: transparent; border: 1px solid transparent; color: var(--text-muted); 
     padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; 
-    display: flex; align-items: center; justify-content: center; gap: 6px; 
+    display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;
   }
   
   .profile-btn.active { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.05); color: #fff; }
@@ -130,8 +127,8 @@
     font-size: 17px; font-family: inherit; resize: none; outline: none; line-height: 1.5; 
   }
   
-  /* Grid ajustado para botões */
-  .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .action-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
   
   .action-btn { 
     background: var(--btn-bg); border: 1px solid var(--panel-border); padding: 12px; border-radius: 999px; 
@@ -158,6 +155,14 @@
   
   .panel-footer { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 4px; opacity: 0.7; }
   
+  .main-btn { 
+    width: 100%; padding: 20px; border-radius: 20px; background: linear-gradient(100deg, #4F7CFF, #A855F7); 
+    border: none; color: white; font-size: 16px; font-weight: 800; letter-spacing: 0.05em; cursor: pointer; 
+    box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.5); margin-top: 10px; 
+    transition: opacity 0.3s;
+  }
+  .main-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+  
   .status-msg { 
     text-align: center; font-size: 13px; font-weight: 600; color: var(--success); 
     min-height: 20px; display: flex; align-items: center; justify-content: center; 
@@ -165,7 +170,6 @@
   }
   .status-msg.error { color: var(--error); }
   
-  /* Rodapé limpo */
   .app-footer { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 4px; margin-top: 20px; font-size: 11px; color: #4B526D; }
   .copyright { font-size: 10px; color: #3A4059; font-weight: 500; letter-spacing: 0.5px; }
   
@@ -197,39 +201,42 @@
   </div>
   
   <div class="audio-settings">
+    <!-- Opções Masculino e Feminino -->
     <div class="profile-buttons">
-      <button class="profile-btn active" data-profile="normal"><span id="uiNormalTone">Tom Normal</span></button>
-      <button class="profile-btn" data-profile="grave"><span id="uiDeepTone">Tom Grave</span></button>
+      <button class="profile-btn active" data-profile="feminino"><span id="uiFemaleVoice">Feminino</span></button>
+      <button class="profile-btn" data-profile="masculino"><span id="uiMaleVoice">Masculino</span></button>
     </div>
     <div class="speed-control"><label id="uiSpeed">Velocidade</label><input type="range" id="speedSlider" min="0.5" max="1.5" step="0.1" value="1.0"><span id="speedValue">1.0x</span></div>
   </div>
   
-  <!-- Painel de Origem -->
+  <!-- Painel de Origem Original Intacto -->
   <div class="panel">
     <div class="panel-header"><span class="panel-label label-origem" id="uiOrigin">Origem</span><span class="chip" id="fromChip">Português</span></div>
     <textarea id="srcText" placeholder="Digite ou fale algo..."></textarea>
     
-    <!-- Botão "Ouvir" removido daqui -->
     <div class="action-grid">
       <button class="action-btn" id="micBtn">
         <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
         <span id="uiSpeakBtn">Falar</span>
       </button>
-      <button class="action-btn" id="histBtn"><span id="uiHistBtn">Histórico</span> (<span id="histCount">0</span>)</button>
+      <button class="action-btn" id="speakSrcBtn">
+        <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+        <span id="uiListenBtn">Ouvir</span>
+      </button>
       <button class="action-btn" id="clearBtn"><span id="uiClearBtn">Limpar</span></button>
+      <button class="action-btn" id="histBtn"><span id="uiHistBtn">Histórico</span> (<span id="histCount">0</span>)</button>
     </div>
     
     <div class="history-panel" id="historyPanel"><div class="history-list" id="historyList"></div><button class="clear-hist-btn" id="clearHistBtn"><span id="uiClearHist">Limpar Histórico</span></button></div>
-    <div class="panel-footer"><span id="srcCount">0 caracteres</span><span>Ctrl+Enter para traduzir</span></div>
+    <div class="panel-footer"><span id="srcCount">0 caracteres</span><span>Ctrl+Enter</span></div>
   </div>
   
-  <!-- Painel de Tradução -->
+  <!-- Painel de Tradução Original Intacto -->
   <div class="panel">
-    <!-- Texto "detectado" removido -->
-    <div class="panel-header"><span class="panel-label label-traducao" id="uiTranslation">Tradução</span><span class="chip" id="toChip">Inglês</span></div>
+    <div class="panel-header"><span class="panel-label label-traducao" id="uiTranslation">Tradução</span><span class="chip" id="toChip">Inglês detectado</span></div>
     <textarea id="outText" placeholder="A tradução aparecerá aqui..." readonly></textarea>
     
-    <div class="action-grid">
+    <div class="action-grid action-grid-3">
       <button class="action-btn" id="speakOutBtn">
         <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
         <span id="uiListenBtn2">Ouvir</span>
@@ -240,8 +247,8 @@
     <div class="panel-footer"><span id="outCount">0 caracteres</span><span id="uiAutoTrans">Tradução automática</span></div>
   </div>
 
-  <!-- Botão gigante removido. A tradução agora é 100% automática -->
-  
+  <!-- Botão Original Intacto -->
+  <button class="main-btn" id="translateBtn">TRADUZIR AGORA</button>
   <div class="status-msg" id="statusMsg"></div>
   
   <div class="app-footer">
@@ -250,7 +257,7 @@
   </div>
 </div>
 
-<!-- OVERLAY LEGENDA -->
+<!-- OVERLAY LEGENDA ORIGINAL -->
 <div class="overlay" id="overlay">
   <div class="overlay-content">
     <h3 id="uiModalTitle">Modo Legenda</h3>
@@ -274,11 +281,11 @@
 
 <script>
   const i18n = {
-    pt: { badge: "Tradutor com voz e legenda", subtitle: "Comunique-se em mais de 30 idiomas com tradução integrada, reprodução de voz e legendas", normalTone: "Tom Normal", deepTone: "Tom Grave", speed: "Velocidade", origin: "Origem", translation: "Tradução", srcPlaceholder: "Digite ou fale algo...", outPlaceholder: "A tradução aparecerá aqui...", speak: "Falar", listen: "Ouvir", clear: "Limpar", history: "Histórico", copy: "Copiar", subtitleBtn: "Legenda", clearHistory: "Limpar Histórico", noHistory: "Nenhum histórico recente.", chars: "caracteres", autoTrans: "Tradução automática", statusListening: "Ouvindo... Fale agora.", statusTranslating: "Traduzindo...", statusSuccess: "✓ Traduzido com sucesso", statusCopied: "✓ Copiado!", statusRecovered: "Histórico recuperado.", statusCleared: "Histórico limpo.", statusError: "Erro na tradução.", statusMicError: "Erro no microfone.", statusMicDenied: "Permissão negada.", statusNoSpeech: "Nenhuma fala detectada.", statusMicUnsupported: "Voz não suportada.", modalTitle: "Modo Legenda", modalClose: "Fechar", modalListen: "Ouvir", footer: "LinguaVox Tecnologia Multilingue", downloadBtn: "Baixar Áudio MP3", statusDownloading: "Preparando download..." },
-    en: { badge: "Voice and subtitle translator", subtitle: "Communicate in over 30 languages with integrated translation, voice playback, and subtitles", normalTone: "Normal Tone", deepTone: "Deep Tone", speed: "Speed", origin: "Source", translation: "Translation", srcPlaceholder: "Type or speak...", outPlaceholder: "Translation will appear here...", speak: "Speak", listen: "Listen", clear: "Clear", history: "History", copy: "Copy", subtitleBtn: "Subtitle", clearHistory: "Clear History", noHistory: "No recent history.", chars: "characters", autoTrans: "Auto translation", statusListening: "Listening...", statusTranslating: "Translating...", statusSuccess: "✓ Translated", statusCopied: "✓ Copied!", statusRecovered: "History recovered.", statusCleared: "History cleared.", statusError: "Translation error.", statusMicError: "Mic error.", statusMicDenied: "Mic denied.", statusNoSpeech: "No speech.", statusMicUnsupported: "Not supported.", modalTitle: "Subtitle Mode", modalClose: "Close", modalListen: "Listen", footer: "LinguaVox Tecnologia Multilingue", downloadBtn: "Download MP3 Audio", statusDownloading: "Preparing download..." },
-    es: { badge: "Traductor de voz y subtítulos", subtitle: "Comunícate en más de 30 idiomas con traducción integrada, reproducción de voz y subtítulos", normalTone: "Tono Normal", deepTone: "Tono Grave", speed: "Velocidad", origin: "Origen", translation: "Traducción", srcPlaceholder: "Escribe o habla...", outPlaceholder: "La traducción aparecerá aquí...", speak: "Hablar", listen: "Escuchar", clear: "Limpiar", history: "Historial", copy: "Copiar", subtitleBtn: "Subtítulo", clearHistory: "Limpiar Historial", noHistory: "Sin historial.", chars: "caracteres", autoTrans: "Traducción automática", statusListening: "Escuchando...", statusTranslating: "Traduciendo...", statusSuccess: "✓ Traducido", statusCopied: "✓ ¡Copiado!", statusRecovered: "Recuperado.", statusCleared: "Limpiado.", statusError: "Error de traducción.", statusMicError: "Error de micrófono.", statusMicDenied: "Permiso denegado.", statusNoSpeech: "No se detectó habla.", statusMicUnsupported: "No soportado.", modalTitle: "Modo Subtítulo", modalClose: "Cerrar", modalListen: "Escuchar", footer: "LinguaVox Tecnologia Multilingue", downloadBtn: "Descargar Audio MP3", statusDownloading: "Preparando descarga..." },
-    hi: { badge: "आवाज़ और सबटाइटल अनुवादक", subtitle: "एकीकृत अनुवाद, आवाज़ प्लेबैक और सबटाइटल के साथ 30 से अधिक भाषाओं में संवाद करें", normalTone: "सामान्य स्वर", deepTone: "गहरा स्वर", speed: "गति", origin: "स्रोत", translation: "अनुवाद", srcPlaceholder: "कुछ लिखें...", outPlaceholder: "अनुवाद यहाँ...", speak: "बोलें", listen: "सुनें", clear: "साफ़ करें", history: "इतिहास", copy: "कॉपी", subtitleBtn: "सबटाइटल", clearHistory: "साफ़ करें", noHistory: "कोई इतिहास नहीं।", chars: "अक्षर", autoTrans: "स्वचालित अनुवाद", statusListening: "सुन रहा है...", statusTranslating: "अनुवाद...", statusSuccess: "✓ अनुवादित", statusCopied: "✓ कॉपी!", statusRecovered: "पुनर्प्राप्त।", statusCleared: "साफ़ किया।", statusError: "त्रुटि।", statusMicError: "माइक त्रुटि।", statusMicDenied: "अनुमति नहीं।", statusNoSpeech: "कोई भाषण नहीं।", statusMicUnsupported: "समर्थित नहीं।", modalTitle: "सबटाइटल मोड", modalClose: "बंद करें", modalListen: "सुनें", footer: "LinguaVox Tecnologia Multilingue", downloadBtn: "MP3 डाउनलोड करें", statusDownloading: "डाउनलोड तैयार..." },
-    zh: { badge: "语音和字幕翻译器", subtitle: "使用集成翻译、语音播放和字幕，用 30 多种语言进行交流", normalTone: "正常音调", deepTone: "低沉音调", speed: "速度", origin: "源语言", translation: "翻译", srcPlaceholder: "输入内容...", outPlaceholder: "翻译将显示...", speak: "说话", listen: "收听", clear: "清除", history: "历史", copy: "复制", subtitleBtn: "字幕", clearHistory: "清除历史", noHistory: "没有历史。", chars: "字符", autoTrans: "自动翻译", statusListening: "正在聆听...", statusTranslating: "正在翻译...", statusSuccess: "✓ 成功", statusCopied: "✓ 已复制！", statusRecovered: "已恢复。", statusCleared: "已清除。", statusError: "翻译错误。", statusMicError: "麦克风错误。", statusMicDenied: "权限被拒绝。", statusNoSpeech: "未检测到语音。", statusMicUnsupported: "不支持。", modalTitle: "字幕模式", modalClose: "关闭", modalListen: "收听", footer: "LinguaVox Tecnologia Multilingue", downloadBtn: "下载 MP3 音频", statusDownloading: "正在准备下载..." }
+    pt: { badge: "Tradutor com voz e legenda", subtitle: "Comunique-se em mais de 30 idiomas com tradução integrada, reprodução de voz e legendas", femaleVoice: "Feminino", maleVoice: "Masculino", speed: "Velocidade", origin: "Origem", translation: "Tradução", srcPlaceholder: "Digite ou fale algo...", outPlaceholder: "A tradução aparecerá aqui...", speak: "Falar", listen: "Ouvir", clear: "Limpar", history: "Histórico", copy: "Copiar", subtitleBtn: "Legenda", translateBtn: "TRADUZIR AGORA", translatingBtn: "TRADUZINDO...", clearHistory: "Limpar Histórico", noHistory: "Nenhum histórico recente.", chars: "caracteres", autoTrans: "Tradução automática", statusListening: "Ouvindo... Fale agora.", statusTranslating: "Traduzindo...", statusSuccess: "✓ Traduzido com sucesso", statusCopied: "✓ Copiado!", statusRecovered: "Histórico recuperado.", statusCleared: "Histórico limpo.", statusError: "Erro na tradução.", statusMicError: "Erro no microfone.", statusMicDenied: "Permissão negada.", statusNoSpeech: "Nenhuma fala detectada.", statusMicUnsupported: "Voz não suportada.", modalTitle: "Modo Legenda", modalClose: "Fechar", modalListen: "Ouvir", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Baixar Áudio MP3", statusDownloading: "Preparando download..." },
+    en: { badge: "Voice and subtitle translator", subtitle: "Communicate in over 30 languages with integrated translation, voice playback, and subtitles", femaleVoice: "Female", maleVoice: "Male", speed: "Speed", origin: "Source", translation: "Translation", srcPlaceholder: "Type or speak...", outPlaceholder: "Translation will appear here...", speak: "Speak", listen: "Listen", clear: "Clear", history: "History", copy: "Copy", subtitleBtn: "Subtitle", translateBtn: "TRANSLATE NOW", translatingBtn: "TRANSLATING...", clearHistory: "Clear History", noHistory: "No recent history.", chars: "characters", autoTrans: "Auto translation", statusListening: "Listening...", statusTranslating: "Translating...", statusSuccess: "✓ Translated", statusCopied: "✓ Copied!", statusRecovered: "History recovered.", statusCleared: "History cleared.", statusError: "Translation error.", statusMicError: "Mic error.", statusMicDenied: "Mic denied.", statusNoSpeech: "No speech.", statusMicUnsupported: "Not supported.", modalTitle: "Subtitle Mode", modalClose: "Close", modalListen: "Listen", footer: "LinguaVox Tecnologia Multilingue", detected: "detected", downloadBtn: "Download MP3 Audio", statusDownloading: "Preparing download..." },
+    es: { badge: "Traductor de voz y subtítulos", subtitle: "Comunícate en más de 30 idiomas con traducción integrada, reproducción de voz y subtítulos", femaleVoice: "Femenino", maleVoice: "Masculino", speed: "Velocidad", origin: "Origen", translation: "Traducción", srcPlaceholder: "Escribe o habla...", outPlaceholder: "La traducción aparecerá aquí...", speak: "Hablar", listen: "Escuchar", clear: "Limpiar", history: "Historial", copy: "Copiar", subtitleBtn: "Subtítulo", translateBtn: "TRADUCIR AHORA", translatingBtn: "TRADUCIENDO...", clearHistory: "Limpiar Historial", noHistory: "Sin historial.", chars: "caracteres", autoTrans: "Traducción automática", statusListening: "Escuchando...", statusTranslating: "Traduciendo...", statusSuccess: "✓ Traducido", statusCopied: "✓ ¡Copiado!", statusRecovered: "Recuperado.", statusCleared: "Limpiado.", statusError: "Error de traducción.", statusMicError: "Error de micrófono.", statusMicDenied: "Permiso denegado.", statusNoSpeech: "No se detectó habla.", statusMicUnsupported: "No soportado.", modalTitle: "Modo Subtítulo", modalClose: "Cerrar", modalListen: "Escuchar", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Descargar Audio MP3", statusDownloading: "Preparando descarga..." },
+    hi: { badge: "आवाज़ और सबटाइटल अनुवादक", subtitle: "एकीकृत अनुवाद, आवाज़ प्लेबैक और सबटाइटल के साथ 30 से अधिक भाषाओं में संवाद करें", femaleVoice: "महिला", maleVoice: "पुरुष", speed: "गति", origin: "स्रोत", translation: "अनुवाद", srcPlaceholder: "कुछ लिखें...", outPlaceholder: "अनुवाद यहाँ...", speak: "बोलें", listen: "सुनें", clear: "साफ़ करें", history: "इतिहास", copy: "कॉपी", subtitleBtn: "सबटाइटल", translateBtn: "अनुवाद करें", translatingBtn: "हो रहा है...", clearHistory: "साफ़ करें", noHistory: "कोई इतिहास नहीं।", chars: "अक्षर", autoTrans: "स्वचालित अनुवाद", statusListening: "सुन रहा है...", statusTranslating: "अनुवाद...", statusSuccess: "✓ अनुवादित", statusCopied: "✓ कॉपी!", statusRecovered: "पुनर्प्राप्त।", statusCleared: "साफ़ किया।", statusError: "त्रुटि।", statusMicError: "माइक त्रुटि।", statusMicDenied: "अनुमति नहीं।", statusNoSpeech: "कोई भाषण नहीं।", statusMicUnsupported: "समर्थित नहीं।", modalTitle: "सबटाइटल मोड", modalClose: "बंद करें", modalListen: "सुनें", footer: "LinguaVox Tecnologia Multilingue", detected: "पहचाना गया", downloadBtn: "MP3 डाउनलोड करें", statusDownloading: "डाउनलोड तैयार..." },
+    zh: { badge: "语音和字幕翻译器", subtitle: "使用集成翻译、语音播放和字幕，用 30 多种语言进行交流", femaleVoice: "女性", maleVoice: "男性", speed: "速度", origin: "源语言", translation: "翻译", srcPlaceholder: "输入内容...", outPlaceholder: "翻译将显示...", speak: "说话", listen: "收听", clear: "清除", history: "历史", copy: "复制", subtitleBtn: "字幕", translateBtn: "立即翻译", translatingBtn: "翻译中...", clearHistory: "清除历史", noHistory: "没有历史。", chars: "字符", autoTrans: "自动翻译", statusListening: "正在聆听...", statusTranslating: "正在翻译...", statusSuccess: "✓ 成功", statusCopied: "✓ 已复制！", statusRecovered: "已恢复。", statusCleared: "已清除。", statusError: "翻译错误。", statusMicError: "麦克风错误。", statusMicDenied: "权限被拒绝。", statusNoSpeech: "未检测到语音。", statusMicUnsupported: "不支持。", modalTitle: "字幕模式", modalClose: "关闭", modalListen: "收听", footer: "LinguaVox Tecnologia Multilingue", detected: "已检测", downloadBtn: "下载 MP3 音频", statusDownloading: "正在准备下载..." }
   };
   
   const LANGS = [
@@ -289,7 +296,7 @@
   
   const specialLocales = { ar: ['ar-SA', 'ar-EG', 'ar-AE', 'ar'], 'ar-EG': ['ar-EG'], 'ar-MA': ['ar-MA'], he: ['he-IL', 'he', 'iw-IL', 'iw'], no: ['nb-NO', 'no-NO', 'no', 'nn-NO'], id: ['id-ID', 'id'] };
   
-  let state = { from: "pt", to: "en", history: [], audioProfile: "normal", speed: 1.0, uiLang: "pt" };
+  let state = { from: "pt", to: "en", history: [], audioProfile: "feminino", speed: 1.0, uiLang: "pt" };
   
   try {
     const savedHist = localStorage.getItem("linguavox-h"); if (savedHist) state.history = JSON.parse(savedHist);
@@ -300,15 +307,18 @@
     const savedUiLang = localStorage.getItem("linguavox-uilang"); if (savedUiLang) state.uiLang = savedUiLang;
   } catch (e) {}
   
-  const srcText = document.getElementById("srcText"); const outText = document.getElementById("outText"); const statusMsg = document.getElementById("statusMsg"); const srcCount = document.getElementById("srcCount"); const outCount = document.getElementById("outCount"); const fromFlag = document.getElementById("fromFlag"); const fromName = document.getElementById("fromName"); const fromChip = document.getElementById("fromChip"); const toFlag = document.getElementById("toFlag"); const toName = document.getElementById("toName"); const toChip = document.getElementById("toChip"); const fromDropdown = document.getElementById("fromDropdown"); const toDropdown = document.getElementById("toDropdown"); const histCount = document.getElementById("histCount"); const micBtn = document.getElementById("micBtn"); const historyPanel = document.getElementById("historyPanel"); const historyList = document.getElementById("historyList"); const profileBtns = document.querySelectorAll(".profile-btn"); const speedSlider = document.getElementById("speedSlider"); const speedValue = document.getElementById("speedValue"); const uiLangSelect = document.getElementById("uiLangSelect");
+  const srcText = document.getElementById("srcText"); const outText = document.getElementById("outText"); const translateBtn = document.getElementById("translateBtn"); const statusMsg = document.getElementById("statusMsg"); const srcCount = document.getElementById("srcCount"); const outCount = document.getElementById("outCount"); const fromFlag = document.getElementById("fromFlag"); const fromName = document.getElementById("fromName"); const fromChip = document.getElementById("fromChip"); const toFlag = document.getElementById("toFlag"); const toName = document.getElementById("toName"); const toChip = document.getElementById("toChip"); const fromDropdown = document.getElementById("fromDropdown"); const toDropdown = document.getElementById("toDropdown"); const histCount = document.getElementById("histCount"); const micBtn = document.getElementById("micBtn"); const historyPanel = document.getElementById("historyPanel"); const historyList = document.getElementById("historyList"); const profileBtns = document.querySelectorAll(".profile-btn"); const speedSlider = document.getElementById("speedSlider"); const speedValue = document.getElementById("speedValue"); const uiLangSelect = document.getElementById("uiLangSelect");
   
   const t = (key) => i18n[state.uiLang][key] || i18n['pt'][key];
   
   function applyLanguage() {
-    document.getElementById("uiBadge").textContent = t('badge'); document.getElementById("uiSubtitle").textContent = t('subtitle'); document.getElementById("uiNormalTone").textContent = t('normalTone'); document.getElementById("uiDeepTone").textContent = t('deepTone'); document.getElementById("uiSpeed").textContent = t('speed'); document.getElementById("uiOrigin").textContent = t('origin'); document.getElementById("uiTranslation").textContent = t('translation');
+    document.getElementById("uiBadge").textContent = t('badge'); document.getElementById("uiSubtitle").textContent = t('subtitle'); 
+    document.getElementById("uiFemaleVoice").textContent = t('femaleVoice'); document.getElementById("uiMaleVoice").textContent = t('maleVoice'); 
+    document.getElementById("uiSpeed").textContent = t('speed'); document.getElementById("uiOrigin").textContent = t('origin'); document.getElementById("uiTranslation").textContent = t('translation');
     srcText.placeholder = t('srcPlaceholder'); outText.placeholder = t('outPlaceholder');
-    document.getElementById("uiSpeakBtn").textContent = t('speak'); document.getElementById("uiListenBtn2").textContent = t('listen'); document.getElementById("uiClearBtn").textContent = t('clear'); document.getElementById("uiHistBtn").textContent = t('history'); document.getElementById("uiCopyBtn").textContent = t('copy'); document.getElementById("uiSubBtn").textContent = t('subtitleBtn');
-    document.getElementById("uiClearHist").textContent = t('clearHistory'); document.getElementById("uiAutoTrans").textContent = t('autoTrans'); document.getElementById("uiFooter").textContent = t('footer');
+    document.getElementById("uiSpeakBtn").textContent = t('speak'); document.getElementById("uiListenBtn").textContent = t('listen'); document.getElementById("uiClearBtn").textContent = t('clear'); document.getElementById("uiHistBtn").textContent = t('history'); 
+    document.getElementById("uiListenBtn2").textContent = t('listen'); document.getElementById("uiCopyBtn").textContent = t('copy'); document.getElementById("uiSubBtn").textContent = t('subtitleBtn');
+    document.getElementById("translateBtn").textContent = t('translateBtn'); document.getElementById("uiClearHist").textContent = t('clearHistory'); document.getElementById("uiAutoTrans").textContent = t('autoTrans'); document.getElementById("uiFooter").textContent = t('footer');
     document.getElementById("uiModalTitle").textContent = t('modalTitle'); document.getElementById("uiModalClose").textContent = t('modalClose'); document.getElementById("uiModalListen").textContent = t('modalListen');
     document.getElementById("uiDownloadBtn").textContent = t('downloadBtn'); 
     updateCounts(); updateHistoryUI(); updateLangUI(); 
@@ -343,8 +353,8 @@
     fromFlag.textContent = lFrom.f; fromName.textContent = lFrom.n; fromChip.textContent = lFrom.n;
     toFlag.textContent = lTo.f; toName.textContent = lTo.n; 
     
-    // Correção: Removido o "detectado" do chip de tradução
-    toChip.textContent = lTo.n;
+    // Mantido o "detectado" original
+    toChip.textContent = lTo.n + " " + t('detected');
     
     renderDropdowns(); localStorage.setItem("linguavox-from", state.from); localStorage.setItem("linguavox-to", state.to);
   }
@@ -399,21 +409,22 @@
 
   let isTranslating = false;
   async function doTranslate() {
-    const text = srcText.value.trim(); if (!text) { outText.value = ""; updateCounts(); setStatus(""); return; } if (isTranslating) return;
-    isTranslating = true; setStatus(t('statusTranslating'));
+    const text = srcText.value.trim(); if (!text) { outText.value = ""; updateCounts(); setStatus(t('srcPlaceholder')); return; } if (isTranslating) return;
+    isTranslating = true; translateBtn.disabled = true; translateBtn.textContent = t('translatingBtn'); setStatus(t('statusTranslating'));
     try {
       const result = await robustTranslate(text, state.from, state.to); outText.value = result; updateCounts(); setStatus(t('statusSuccess'), false);
       state.history.unshift({ src: text, out: result, at: Date.now() }); if (state.history.length > 30) state.history.pop();
       localStorage.setItem("linguavox-h", JSON.stringify(state.history)); localStorage.setItem("linguavox-src", text); localStorage.setItem("linguavox-out", result); updateHistoryUI();
-    } catch (error) { setStatus(t('statusError'), true); } finally { isTranslating = false; }
+    } catch (error) { setStatus(t('statusError'), true); } finally { isTranslating = false; translateBtn.disabled = false; translateBtn.textContent = t('translateBtn'); }
   }
   
+  translateBtn.onclick = doTranslate;
   srcText.addEventListener("input", () => { updateCounts(); clearTimeout(window._typingTimer); window._typingTimer = setTimeout(() => { if (srcText.value.trim().length >= 3) doTranslate(); }, 1200); });
   srcText.addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") doTranslate(); });
   document.getElementById("clearBtn").onclick = () => { srcText.value = ""; outText.value = ""; updateCounts(); setStatus(""); srcText.focus(); };
   document.getElementById("copyBtn").onclick = async () => { if (!outText.value) return; try { await navigator.clipboard.writeText(outText.value); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } catch (e) { outText.select(); document.execCommand("copy"); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } };
   
-  // --- INÍCIO DA NOVA FUNÇÃO DE VOZ HUMANIZADA ---
+  // --- SISTEMA DE VOZ CORRIGIDO (MASCULINO / FEMININO) ---
   let currentAudio = null;
 
   function getBestVoice(langCode, profile) {
@@ -431,19 +442,24 @@
     }
     if (available.length === 0) return null;
     
-    const premiumKeywords = ['natural', 'neural', 'google', 'microsoft', 'siri', 'wavenet', 'online'];
-    let bestVoice = available.find(v => premiumKeywords.some(p => v.name.toLowerCase().includes(p)));
+    // Listas expandidas de nomes para garantir achar a voz certa
+    const maleKeywords = ['daniel', 'felipe', 'alex', 'david', 'mark', 'jorge', 'thomas', 'diego', 'antonio', 'joao', 'marcos', 'ricardo', 'thiago', 'guilherme', 'male', 'homem', 'masculino']; 
+    const femaleKeywords = ['luciana', 'samantha', 'monica', 'paulina', 'amelie', 'karen', 'zira', 'victoria', 'maria', 'joana', 'francisca', 'camila', 'vitoria', 'fernanda', 'female', 'mulher', 'feminino']; 
     
-    if (!bestVoice) {
-      const maleKeywords = ['daniel', 'felipe', 'alex', 'david', 'mark', 'jorge', 'thomas', 'diego']; 
-      const femaleKeywords = ['luciana', 'samantha', 'monica', 'paulina', 'amelie', 'karen', 'zira', 'victoria', 'maria', 'joana', 'francisca']; 
-      
-      if (profile === 'grave') { 
-        bestVoice = available.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k))); 
-      } else { 
-        bestVoice = available.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k))); 
+    let bestVoice = null; 
+    
+    if (profile === 'masculino') { 
+      // Tenta achar um nome masculino
+      bestVoice = available.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k))); 
+      // Se não achar, tenta pegar uma voz que NÃO seja explicitamente feminina
+      if (!bestVoice) {
+          bestVoice = available.find(v => !femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
       }
+    } else { 
+      // Tenta achar um nome feminino
+      bestVoice = available.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k))); 
     }
+    
     return bestVoice || available[0];
   }
 
@@ -457,16 +473,23 @@
     }
     speechSynthesis.cancel();
 
+    // Se for MASCULINO, vai direto para a voz do navegador com tom grave forçado
+    if (state.audioProfile === 'masculino') {
+      playBrowserVoice(text, langCode);
+      return;
+    }
+
     const apiLang = langCode.split('-')[0];
 
-    // Fallback para navegador se o texto for longo (Google TTS limita a 200 chars)
+    // Fallback para navegador se o texto for longo
     if (text.length > 200) {
       playBrowserVoice(text, langCode);
       return;
     }
 
-    setStatus("🔊 Carregando voz humanizada...");
+    setStatus("🔊 Carregando voz...");
     
+    // Google TTS para Feminino (mais natural)
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${apiLang}&client=tw-ob`;
     currentAudio = new Audio(url);
     
@@ -494,7 +517,13 @@
     const voice = getBestVoice(langCode, state.audioProfile); 
     if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
     
-    utterance.pitch = state.audioProfile === 'grave' ? 0.8 : 1.05; 
+    // AQUI ESTÁ A CORREÇÃO: Força o tom MUITO grave para masculino (0.4)
+    if (state.audioProfile === 'masculino') { 
+      utterance.pitch = 0.4; 
+    } else { 
+      utterance.pitch = 1.1; 
+    }
+    
     utterance.rate = state.speed; 
     
     speechSynthesis.speak(utterance); 
@@ -503,8 +532,9 @@
     utterance.onend = () => setStatus(""); 
     utterance.onerror = (e) => { setStatus(t('statusError'), true); setTimeout(() => setStatus(""), 3000); };
   }
-  // --- FIM DA NOVA FUNÇÃO DE VOZ HUMANIZADA ---
+  // --- FIM DO SISTEMA DE VOZ ---
   
+  document.getElementById("speakSrcBtn").onclick = () => speak(srcText.value, state.from); 
   document.getElementById("speakOutBtn").onclick = () => speak(outText.value, state.to);
   
   function updateHistoryUI() {
