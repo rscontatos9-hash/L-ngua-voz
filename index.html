@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05060A">
 <title>LinguaVox — Tradutor Universal</title>
+<!-- BIBLIOTECA DE VOZ NEURAL MICROSOFT EDGE TTS -->
+<script src="https://cdn.jsdelivr.net/npm/@edge-tts/universal@1.4.0/dist/browser/index.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
   
@@ -76,16 +78,6 @@
     background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 18px; 
     padding: 16px; display: flex; flex-direction: column; gap: 16px; backdrop-filter: blur(10px); 
   }
-  
-  .profile-buttons { display: flex; gap: 8px; }
-  
-  .profile-btn { 
-    flex: 1; background: transparent; border: 1px solid transparent; color: var(--text-muted); 
-    padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; 
-    display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;
-  }
-  
-  .profile-btn.active { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.05); color: #fff; }
   
   .speed-control { display: flex; align-items: center; gap: 12px; padding: 0 4px; }
   .speed-control label { font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
@@ -200,12 +192,8 @@
     <div class="sel-container" id="toContainer"><button class="lang-btn" id="toBtn"><span class="flag" id="toFlag">🇺🇸</span><span id="toName">Inglês</span></button><div class="dropdown" id="toDropdown"></div></div>
   </div>
   
+  <!-- Configurações de Áudio (Apenas Velocidade agora) -->
   <div class="audio-settings">
-    <!-- Opções Masculino e Feminino -->
-    <div class="profile-buttons">
-      <button class="profile-btn active" data-profile="feminino"><span id="uiFemaleVoice">Feminino</span></button>
-      <button class="profile-btn" data-profile="masculino"><span id="uiMaleVoice">Masculino</span></button>
-    </div>
     <div class="speed-control"><label id="uiSpeed">Velocidade</label><input type="range" id="speedSlider" min="0.5" max="1.5" step="0.1" value="1.0"><span id="speedValue">1.0x</span></div>
   </div>
   
@@ -281,11 +269,11 @@
 
 <script>
   const i18n = {
-    pt: { badge: "Tradutor com voz e legenda", subtitle: "Comunique-se em mais de 30 idiomas com tradução integrada, reprodução de voz e legendas", femaleVoice: "Feminino", maleVoice: "Masculino", speed: "Velocidade", origin: "Origem", translation: "Tradução", srcPlaceholder: "Digite ou fale algo...", outPlaceholder: "A tradução aparecerá aqui...", speak: "Falar", listen: "Ouvir", clear: "Limpar", history: "Histórico", copy: "Copiar", subtitleBtn: "Legenda", translateBtn: "TRADUZIR AGORA", translatingBtn: "TRADUZINDO...", clearHistory: "Limpar Histórico", noHistory: "Nenhum histórico recente.", chars: "caracteres", autoTrans: "Tradução automática", statusListening: "Ouvindo... Fale agora.", statusTranslating: "Traduzindo...", statusSuccess: "✓ Traduzido com sucesso", statusCopied: "✓ Copiado!", statusRecovered: "Histórico recuperado.", statusCleared: "Histórico limpo.", statusError: "Erro na tradução.", statusMicError: "Erro no microfone.", statusMicDenied: "Permissão negada.", statusNoSpeech: "Nenhuma fala detectada.", statusMicUnsupported: "Voz não suportada.", modalTitle: "Modo Legenda", modalClose: "Fechar", modalListen: "Ouvir", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Baixar Áudio MP3", statusDownloading: "Preparando download..." },
-    en: { badge: "Voice and subtitle translator", subtitle: "Communicate in over 30 languages with integrated translation, voice playback, and subtitles", femaleVoice: "Female", maleVoice: "Male", speed: "Speed", origin: "Source", translation: "Translation", srcPlaceholder: "Type or speak...", outPlaceholder: "Translation will appear here...", speak: "Speak", listen: "Listen", clear: "Clear", history: "History", copy: "Copy", subtitleBtn: "Subtitle", translateBtn: "TRANSLATE NOW", translatingBtn: "TRANSLATING...", clearHistory: "Clear History", noHistory: "No recent history.", chars: "characters", autoTrans: "Auto translation", statusListening: "Listening...", statusTranslating: "Translating...", statusSuccess: "✓ Translated", statusCopied: "✓ Copied!", statusRecovered: "History recovered.", statusCleared: "History cleared.", statusError: "Translation error.", statusMicError: "Mic error.", statusMicDenied: "Mic denied.", statusNoSpeech: "No speech.", statusMicUnsupported: "Not supported.", modalTitle: "Subtitle Mode", modalClose: "Close", modalListen: "Listen", footer: "LinguaVox Tecnologia Multilingue", detected: "detected", downloadBtn: "Download MP3 Audio", statusDownloading: "Preparing download..." },
-    es: { badge: "Traductor de voz y subtítulos", subtitle: "Comunícate en más de 30 idiomas con traducción integrada, reproducción de voz y subtítulos", femaleVoice: "Femenino", maleVoice: "Masculino", speed: "Velocidad", origin: "Origen", translation: "Traducción", srcPlaceholder: "Escribe o habla...", outPlaceholder: "La traducción aparecerá aquí...", speak: "Hablar", listen: "Escuchar", clear: "Limpiar", history: "Historial", copy: "Copiar", subtitleBtn: "Subtítulo", translateBtn: "TRADUCIR AHORA", translatingBtn: "TRADUCIENDO...", clearHistory: "Limpiar Historial", noHistory: "Sin historial.", chars: "caracteres", autoTrans: "Traducción automática", statusListening: "Escuchando...", statusTranslating: "Traduciendo...", statusSuccess: "✓ Traducido", statusCopied: "✓ ¡Copiado!", statusRecovered: "Recuperado.", statusCleared: "Limpiado.", statusError: "Error de traducción.", statusMicError: "Error de micrófono.", statusMicDenied: "Permiso denegado.", statusNoSpeech: "No se detectó habla.", statusMicUnsupported: "No soportado.", modalTitle: "Modo Subtítulo", modalClose: "Cerrar", modalListen: "Escuchar", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Descargar Audio MP3", statusDownloading: "Preparando descarga..." },
-    hi: { badge: "आवाज़ और सबटाइटल अनुवादक", subtitle: "एकीकृत अनुवाद, आवाज़ प्लेबैक और सबटाइटल के साथ 30 से अधिक भाषाओं में संवाद करें", femaleVoice: "महिला", maleVoice: "पुरुष", speed: "गति", origin: "स्रोत", translation: "अनुवाद", srcPlaceholder: "कुछ लिखें...", outPlaceholder: "अनुवाद यहाँ...", speak: "बोलें", listen: "सुनें", clear: "साफ़ करें", history: "इतिहास", copy: "कॉपी", subtitleBtn: "सबटाइटल", translateBtn: "अनुवाद करें", translatingBtn: "हो रहा है...", clearHistory: "साफ़ करें", noHistory: "कोई इतिहास नहीं।", chars: "अक्षर", autoTrans: "स्वचालित अनुवाद", statusListening: "सुन रहा है...", statusTranslating: "अनुवाद...", statusSuccess: "✓ अनुवादित", statusCopied: "✓ कॉपी!", statusRecovered: "पुनर्प्राप्त।", statusCleared: "साफ़ किया।", statusError: "त्रुटि।", statusMicError: "माइक त्रुटि।", statusMicDenied: "अनुमति नहीं।", statusNoSpeech: "कोई भाषण नहीं।", statusMicUnsupported: "समर्थित नहीं।", modalTitle: "सबटाइटल मोड", modalClose: "बंद करें", modalListen: "सुनें", footer: "LinguaVox Tecnologia Multilingue", detected: "पहचाना गया", downloadBtn: "MP3 डाउनलोड करें", statusDownloading: "डाउनलोड तैयार..." },
-    zh: { badge: "语音和字幕翻译器", subtitle: "使用集成翻译、语音播放和字幕，用 30 多种语言进行交流", femaleVoice: "女性", maleVoice: "男性", speed: "速度", origin: "源语言", translation: "翻译", srcPlaceholder: "输入内容...", outPlaceholder: "翻译将显示...", speak: "说话", listen: "收听", clear: "清除", history: "历史", copy: "复制", subtitleBtn: "字幕", translateBtn: "立即翻译", translatingBtn: "翻译中...", clearHistory: "清除历史", noHistory: "没有历史。", chars: "字符", autoTrans: "自动翻译", statusListening: "正在聆听...", statusTranslating: "正在翻译...", statusSuccess: "✓ 成功", statusCopied: "✓ 已复制！", statusRecovered: "已恢复。", statusCleared: "已清除。", statusError: "翻译错误。", statusMicError: "麦克风错误。", statusMicDenied: "权限被拒绝。", statusNoSpeech: "未检测到语音。", statusMicUnsupported: "不支持。", modalTitle: "字幕模式", modalClose: "关闭", modalListen: "收听", footer: "LinguaVox Tecnologia Multilingue", detected: "已检测", downloadBtn: "下载 MP3 音频", statusDownloading: "正在准备下载..." }
+    pt: { badge: "Tradutor com voz e legenda", subtitle: "Comunique-se em mais de 30 idiomas com tradução integrada, reprodução de voz e legendas", speed: "Velocidade", origin: "Origem", translation: "Tradução", srcPlaceholder: "Digite ou fale algo...", outPlaceholder: "A tradução aparecerá aqui...", speak: "Falar", listen: "Ouvir", clear: "Limpar", history: "Histórico", copy: "Copiar", subtitleBtn: "Legenda", translateBtn: "TRADUZIR AGORA", translatingBtn: "TRADUZINDO...", clearHistory: "Limpar Histórico", noHistory: "Nenhum histórico recente.", chars: "caracteres", autoTrans: "Tradução automática", statusListening: "Ouvindo... Fale agora.", statusTranslating: "Traduzindo...", statusSuccess: "✓ Traduzido com sucesso", statusCopied: "✓ Copiado!", statusRecovered: "Histórico recuperado.", statusCleared: "Histórico limpo.", statusError: "Erro na tradução.", statusMicError: "Erro no microfone.", statusMicDenied: "Permissão negada.", statusNoSpeech: "Nenhuma fala detectada.", statusMicUnsupported: "Voz não suportada.", modalTitle: "Modo Legenda", modalClose: "Fechar", modalListen: "Ouvir", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Baixar Áudio MP3", statusDownloading: "Preparando download..." },
+    en: { badge: "Voice and subtitle translator", subtitle: "Communicate in over 30 languages with integrated translation, voice playback, and subtitles", speed: "Speed", origin: "Source", translation: "Translation", srcPlaceholder: "Type or speak...", outPlaceholder: "Translation will appear here...", speak: "Speak", listen: "Listen", clear: "Clear", history: "History", copy: "Copy", subtitleBtn: "Subtitle", translateBtn: "TRANSLATE NOW", translatingBtn: "TRANSLATING...", clearHistory: "Clear History", noHistory: "No recent history.", chars: "characters", autoTrans: "Auto translation", statusListening: "Listening...", statusTranslating: "Translating...", statusSuccess: "✓ Translated", statusCopied: "✓ Copied!", statusRecovered: "History recovered.", statusCleared: "History cleared.", statusError: "Translation error.", statusMicError: "Mic error.", statusMicDenied: "Mic denied.", statusNoSpeech: "No speech.", statusMicUnsupported: "Not supported.", modalTitle: "Subtitle Mode", modalClose: "Close", modalListen: "Listen", footer: "LinguaVox Tecnologia Multilingue", detected: "detected", downloadBtn: "Download MP3 Audio", statusDownloading: "Preparing download..." },
+    es: { badge: "Traductor de voz y subtítulos", subtitle: "Comunícate en más de 30 idiomas con traducción integrada, reproducción de voz y subtítulos", speed: "Velocidad", origin: "Origen", translation: "Traducción", srcPlaceholder: "Escribe o habla...", outPlaceholder: "La traducción aparecerá aquí...", speak: "Hablar", listen: "Escuchar", clear: "Limpiar", history: "Historial", copy: "Copiar", subtitleBtn: "Subtítulo", translateBtn: "TRADUCIR AHORA", translatingBtn: "TRADUCIENDO...", clearHistory: "Limpiar Historial", noHistory: "Sin historial.", chars: "caracteres", autoTrans: "Traducción automática", statusListening: "Escuchando...", statusTranslating: "Traduciendo...", statusSuccess: "✓ Traducido", statusCopied: "✓ ¡Copiado!", statusRecovered: "Recuperado.", statusCleared: "Limpiado.", statusError: "Error de traducción.", statusMicError: "Error de micrófono.", statusMicDenied: "Permiso denegado.", statusNoSpeech: "No se detectó habla.", statusMicUnsupported: "No soportado.", modalTitle: "Modo Subtítulo", modalClose: "Cerrar", modalListen: "Escuchar", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Descargar Audio MP3", statusDownloading: "Preparando descarga..." },
+    hi: { badge: "आवाज़ और सबटाइटल अनुवादक", subtitle: "एकीकृत अनुवाद, आवाज़ प्लेबैक और सबटाइटल के साथ 30 से अधिक भाषाओं में संवाद करें", speed: "गति", origin: "स्रोत", translation: "अनुवाद", srcPlaceholder: "कुछ लिखें...", outPlaceholder: "अनुवाद यहाँ...", speak: "बोलें", listen: "सुनें", clear: "साफ़ करें", history: "इतिहास", copy: "कॉपी", subtitleBtn: "सबटाइटल", translateBtn: "अनुवाद करें", translatingBtn: "हो रहा है...", clearHistory: "साफ़ करें", noHistory: "कोई इतिहास नहीं।", chars: "अक्षर", autoTrans: "स्वचालित अनुवाद", statusListening: "सुन रहा है...", statusTranslating: "अनुवाद...", statusSuccess: "✓ अनुवादित", statusCopied: "✓ कॉपी!", statusRecovered: "पुनर्प्राप्त।", statusCleared: "साफ़ किया।", statusError: "त्रुटि।", statusMicError: "माइक त्रुटि।", statusMicDenied: "अनुमति नहीं।", statusNoSpeech: "कोई भाषण नहीं।", statusMicUnsupported: "समर्थित नहीं।", modalTitle: "सबटाइटल मोड", modalClose: "बंद करें", modalListen: "सुनें", footer: "LinguaVox Tecnologia Multilingue", detected: "पहचाना गया", downloadBtn: "MP3 डाउनलोड करें", statusDownloading: "डाउनलोड तैयार..." },
+    zh: { badge: "语音和字幕翻译器", subtitle: "使用集成翻译、语音播放和字幕，用 30 多种语言进行交流", speed: "速度", origin: "源语言", translation: "翻译", srcPlaceholder: "输入内容...", outPlaceholder: "翻译将显示...", speak: "说话", listen: "收听", clear: "清除", history: "历史", copy: "复制", subtitleBtn: "字幕", translateBtn: "立即翻译", translatingBtn: "翻译中...", clearHistory: "清除历史", noHistory: "没有历史。", chars: "字符", autoTrans: "自动翻译", statusListening: "正在聆听...", statusTranslating: "正在翻译...", statusSuccess: "✓ 成功", statusCopied: "✓ 已复制！", statusRecovered: "已恢复。", statusCleared: "已清除。", statusError: "翻译错误。", statusMicError: "麦克风错误。", statusMicDenied: "权限被拒绝。", statusNoSpeech: "未检测到语音。", statusMicUnsupported: "不支持。", modalTitle: "字幕模式", modalClose: "关闭", modalListen: "收听", footer: "LinguaVox Tecnologia Multilingue", detected: "已检测", downloadBtn: "下载 MP3 音频", statusDownloading: "正在准备下载..." }
   };
   
   const LANGS = [
@@ -296,24 +284,22 @@
   
   const specialLocales = { ar: ['ar-SA', 'ar-EG', 'ar-AE', 'ar'], 'ar-EG': ['ar-EG'], 'ar-MA': ['ar-MA'], he: ['he-IL', 'he', 'iw-IL', 'iw'], no: ['nb-NO', 'no-NO', 'no', 'nn-NO'], id: ['id-ID', 'id'] };
   
-  let state = { from: "pt", to: "en", history: [], audioProfile: "feminino", speed: 1.0, uiLang: "pt" };
+  let state = { from: "pt", to: "en", history: [], speed: 1.0, uiLang: "pt" };
   
   try {
     const savedHist = localStorage.getItem("linguavox-h"); if (savedHist) state.history = JSON.parse(savedHist);
     const savedFrom = localStorage.getItem("linguavox-from"); if (savedFrom) state.from = savedFrom;
     const savedTo = localStorage.getItem("linguavox-to"); if (savedTo) state.to = savedTo;
-    const savedProfile = localStorage.getItem("linguavox-audio-profile"); if (savedProfile) state.audioProfile = savedProfile;
     const savedSpeed = localStorage.getItem("linguavox-speed"); if (savedSpeed) state.speed = parseFloat(savedSpeed);
     const savedUiLang = localStorage.getItem("linguavox-uilang"); if (savedUiLang) state.uiLang = savedUiLang;
   } catch (e) {}
   
-  const srcText = document.getElementById("srcText"); const outText = document.getElementById("outText"); const translateBtn = document.getElementById("translateBtn"); const statusMsg = document.getElementById("statusMsg"); const srcCount = document.getElementById("srcCount"); const outCount = document.getElementById("outCount"); const fromFlag = document.getElementById("fromFlag"); const fromName = document.getElementById("fromName"); const fromChip = document.getElementById("fromChip"); const toFlag = document.getElementById("toFlag"); const toName = document.getElementById("toName"); const toChip = document.getElementById("toChip"); const fromDropdown = document.getElementById("fromDropdown"); const toDropdown = document.getElementById("toDropdown"); const histCount = document.getElementById("histCount"); const micBtn = document.getElementById("micBtn"); const historyPanel = document.getElementById("historyPanel"); const historyList = document.getElementById("historyList"); const profileBtns = document.querySelectorAll(".profile-btn"); const speedSlider = document.getElementById("speedSlider"); const speedValue = document.getElementById("speedValue"); const uiLangSelect = document.getElementById("uiLangSelect");
+  const srcText = document.getElementById("srcText"); const outText = document.getElementById("outText"); const translateBtn = document.getElementById("translateBtn"); const statusMsg = document.getElementById("statusMsg"); const srcCount = document.getElementById("srcCount"); const outCount = document.getElementById("outCount"); const fromFlag = document.getElementById("fromFlag"); const fromName = document.getElementById("fromName"); const fromChip = document.getElementById("fromChip"); const toFlag = document.getElementById("toFlag"); const toName = document.getElementById("toName"); const toChip = document.getElementById("toChip"); const fromDropdown = document.getElementById("fromDropdown"); const toDropdown = document.getElementById("toDropdown"); const histCount = document.getElementById("histCount"); const micBtn = document.getElementById("micBtn"); const historyPanel = document.getElementById("historyPanel"); const historyList = document.getElementById("historyList"); const speedSlider = document.getElementById("speedSlider"); const speedValue = document.getElementById("speedValue"); const uiLangSelect = document.getElementById("uiLangSelect");
   
   const t = (key) => i18n[state.uiLang][key] || i18n['pt'][key];
   
   function applyLanguage() {
     document.getElementById("uiBadge").textContent = t('badge'); document.getElementById("uiSubtitle").textContent = t('subtitle'); 
-    document.getElementById("uiFemaleVoice").textContent = t('femaleVoice'); document.getElementById("uiMaleVoice").textContent = t('maleVoice'); 
     document.getElementById("uiSpeed").textContent = t('speed'); document.getElementById("uiOrigin").textContent = t('origin'); document.getElementById("uiTranslation").textContent = t('translation');
     srcText.placeholder = t('srcPlaceholder'); outText.placeholder = t('outPlaceholder');
     document.getElementById("uiSpeakBtn").textContent = t('speak'); document.getElementById("uiListenBtn").textContent = t('listen'); document.getElementById("uiClearBtn").textContent = t('clear'); document.getElementById("uiHistBtn").textContent = t('history'); 
@@ -333,11 +319,6 @@
   speedSlider.value = state.speed; speedValue.textContent = state.speed.toFixed(1) + "x";
   speedSlider.addEventListener("input", (e) => { state.speed = parseFloat(e.target.value); speedValue.textContent = state.speed.toFixed(1) + "x"; localStorage.setItem("linguavox-speed", state.speed); });
   
-  profileBtns.forEach(btn => {
-    if (btn.dataset.profile === state.audioProfile) btn.classList.add("active"); else btn.classList.remove("active");
-    btn.onclick = () => { state.audioProfile = btn.dataset.profile; profileBtns.forEach(b => b.classList.remove("active")); btn.classList.add("active"); localStorage.setItem("linguavox-audio-profile", state.audioProfile); };
-  });
-  
   function renderDropdowns() {
     fromDropdown.innerHTML = ""; toDropdown.innerHTML = "";
     LANGS.forEach(l => {
@@ -353,7 +334,6 @@
     fromFlag.textContent = lFrom.f; fromName.textContent = lFrom.n; fromChip.textContent = lFrom.n;
     toFlag.textContent = lTo.f; toName.textContent = lTo.n; 
     
-    // Mantido o "detectado" original
     toChip.textContent = lTo.n + " " + t('detected');
     
     renderDropdowns(); localStorage.setItem("linguavox-from", state.from); localStorage.setItem("linguavox-to", state.to);
@@ -424,46 +404,10 @@
   document.getElementById("clearBtn").onclick = () => { srcText.value = ""; outText.value = ""; updateCounts(); setStatus(""); srcText.focus(); };
   document.getElementById("copyBtn").onclick = async () => { if (!outText.value) return; try { await navigator.clipboard.writeText(outText.value); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } catch (e) { outText.select(); document.execCommand("copy"); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } };
   
-  // --- SISTEMA DE VOZ CORRIGIDO (MASCULINO / FEMININO) ---
+  // --- SISTEMA DE VOZ NEURAL FEMININA 100% HUMANA ---
   let currentAudio = null;
 
-  function getBestVoice(langCode, profile) {
-    const voices = speechSynthesis.getVoices(); 
-    let targetLocales = specialLocales[langCode] || [localeMap[langCode] || langCode]; 
-    let available = [];
-    
-    for (let code of targetLocales) { 
-      available = voices.filter(v => v.lang.toLowerCase().replace('_', '-') === code.toLowerCase()); 
-      if (available.length > 0) break; 
-    }
-    if (available.length === 0) { 
-      let prefix = (targetLocales[0] || langCode).split('-')[0].toLowerCase(); 
-      available = voices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith(prefix)); 
-    }
-    if (available.length === 0) return null;
-    
-    // Listas expandidas de nomes para garantir achar a voz certa
-    const maleKeywords = ['daniel', 'felipe', 'alex', 'david', 'mark', 'jorge', 'thomas', 'diego', 'antonio', 'joao', 'marcos', 'ricardo', 'thiago', 'guilherme', 'male', 'homem', 'masculino']; 
-    const femaleKeywords = ['luciana', 'samantha', 'monica', 'paulina', 'amelie', 'karen', 'zira', 'victoria', 'maria', 'joana', 'francisca', 'camila', 'vitoria', 'fernanda', 'female', 'mulher', 'feminino']; 
-    
-    let bestVoice = null; 
-    
-    if (profile === 'masculino') { 
-      // Tenta achar um nome masculino
-      bestVoice = available.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k))); 
-      // Se não achar, tenta pegar uma voz que NÃO seja explicitamente feminina
-      if (!bestVoice) {
-          bestVoice = available.find(v => !femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
-      }
-    } else { 
-      // Tenta achar um nome feminino
-      bestVoice = available.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k))); 
-    }
-    
-    return bestVoice || available[0];
-  }
-
-  function speak(text, langCode) {
+  async function speak(text, langCode) {
     if (!text.trim()) return; 
     
     if (currentAudio) {
@@ -473,38 +417,58 @@
     }
     speechSynthesis.cancel();
 
-    // Se for MASCULINO, vai direto para a voz do navegador com tom grave forçado
-    if (state.audioProfile === 'masculino') {
-      playBrowserVoice(text, langCode);
-      return;
+    // Tenta SEMPRE a voz NEURAL FEMININA da Microsoft (a mais humana e com dicção perfeita)
+    if (window.EdgeTTS) {
+      try {
+        setStatus("🔊 Buscando voz humana...");
+        const targetLang = (localeMap[langCode] || langCode).toLowerCase();
+        const langPrefix = targetLang.split('-')[0]; // ex: 'pt', 'en'
+
+        const voices = await window.EdgeTTS.listVoices();
+        // Busca uma voz feminina de alta qualidade (ex: Francisca para pt-BR, Aria para en-US)
+        const femaleVoice = voices.find(v => v.Gender === 'Female' && v.Locale.toLowerCase().startsWith(langPrefix));
+
+        if (femaleVoice) {
+          const url = await window.EdgeTTS.Communicate(text, { voice: femaleVoice.Name });
+          currentAudio = new Audio(url);
+          
+          currentAudio.onplay = () => setStatus("🔊 Reproduzindo...");
+          currentAudio.onended = () => { setStatus(""); currentAudio = null; };
+          currentAudio.onerror = () => { 
+            currentAudio = null; 
+            playBrowserVoice(text, langCode); 
+          };
+          
+          await currentAudio.play();
+          return;
+        }
+      } catch (e) {
+        console.warn("EdgeTTS falhou, usando fallback.", e);
+      }
     }
 
+    // Fallback 1: Google TTS (Tem excelente dicção e pausas, embora seja um pouco menos "humana" que a Edge)
     const apiLang = langCode.split('-')[0];
 
-    // Fallback para navegador se o texto for longo
-    if (text.length > 200) {
-      playBrowserVoice(text, langCode);
-      return;
+    if (text.length <= 200) {
+      try {
+        setStatus("🔊 Carregando voz...");
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${apiLang}&client=tw-ob`;
+        currentAudio = new Audio(url);
+        
+        currentAudio.onplay = () => setStatus("🔊 Reproduzindo...");
+        currentAudio.onended = () => { setStatus(""); currentAudio = null; };
+        currentAudio.onerror = () => { currentAudio = null; playBrowserVoice(text, langCode); };
+
+        await currentAudio.play();
+        return;
+      } catch (e) {
+        currentAudio = null;
+      }
     }
 
-    setStatus("🔊 Carregando voz...");
-    
-    // Google TTS para Feminino (mais natural)
-    const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${apiLang}&client=tw-ob`;
-    currentAudio = new Audio(url);
-    
-    currentAudio.onplay = () => setStatus("🔊 Reproduzindo...");
-    currentAudio.onended = () => { setStatus(""); currentAudio = null; };
-    
-    currentAudio.onerror = () => {
-      currentAudio = null;
-      playBrowserVoice(text, langCode);
-    };
-
-    currentAudio.play().catch(e => {
-      currentAudio = null;
-      playBrowserVoice(text, langCode);
-    });
+    // Fallback 2: Voz do Navegador (Sistema)
+    playBrowserVoice(text, langCode);
   }
 
   function playBrowserVoice(text, langCode) {
@@ -514,16 +478,21 @@
     let finalLang = (specialLocales[langCode] && specialLocales[langCode][0]) || localeMap[langCode] || langCode; 
     utterance.lang = finalLang;
     
-    const voice = getBestVoice(langCode, state.audioProfile); 
-    if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
+    const voices = speechSynthesis.getVoices();
+    let available = voices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith(finalLang.split('-')[0].toLowerCase()));
     
-    // AQUI ESTÁ A CORREÇÃO: Força o tom MUITO grave para masculino (0.4)
-    if (state.audioProfile === 'masculino') { 
-      utterance.pitch = 0.4; 
-    } else { 
-      utterance.pitch = 1.1; 
+    // Busca a melhor voz feminina disponível no aparelho
+    const femaleKeywords = ['luciana', 'samantha', 'monica', 'paulina', 'amelie', 'karen', 'zira', 'victoria', 'maria', 'joana', 'female', 'mulher', 'feminino'];
+    const femaleVoice = available.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
+    
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
+    } else if (available.length > 0) {
+      utterance.voice = available[0];
     }
     
+    // Tom natural (1.0 a 1.1) para não soar robótico
+    utterance.pitch = 1.05; 
     utterance.rate = state.speed; 
     
     speechSynthesis.speak(utterance); 
