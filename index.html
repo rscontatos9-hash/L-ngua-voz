@@ -202,12 +202,20 @@
 </div>
 
 <script>
+  // --- CONFIGURAÇÃO ESTRUTURAL ---
+  const EMAIL_MYMEMORY = "rscontatos9@gmail.com";
+  const LIMITE_DIA = 1000;
+  const DEBOUNCE_MS = 800;
+
+  let timerDebounce;
+  let ultimaFrase = "";
+
   const i18n = {
-    pt: { badge: "Tradutor com voz e legenda", subtitle: "Comunique-se em mais de 30 idiomas com tradução integrada, reprodução de voz e legendas", normalTone: "Tom Normal", deepTone: "Tom Grave", speed: "Velocidade", origin: "Origem", translation: "Tradução", srcPlaceholder: "Digite ou fale algo...", outPlaceholder: "A tradução aparecerá aqui...", speak: "Falar", listen: "Ouvir", clear: "Limpar", history: "Histórico", copy: "Copiar", subtitleBtn: "Legenda", translateBtn: "TRADUZIR AGORA", translatingBtn: "TRADUZINDO...", clearHistory: "Limpar Histórico", noHistory: "Nenhum histórico recente.", chars: "caracteres", autoTrans: "Tradução automática", statusListening: "Ouvindo... Fale agora.", statusTranslating: "Traduzindo...", statusSuccess: "✓ Traduzido com sucesso", statusCopied: "✓ Copiado!", statusRecovered: "Histórico recuperado.", statusCleared: "Histórico limpo.", statusError: "Erro na tradução.", statusMicError: "Erro no microfone.", statusMicDenied: "Permissão negada.", statusNoSpeech: "Nenhuma fala detectada.", statusMicUnsupported: "Voz não suportada.", modalTitle: "Modo Legenda", modalClose: "Fechar", modalListen: "Ouvir", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Baixar Áudio MP3", statusDownloading: "Preparando download...", usage: "Você usou {count}/1000 hoje", limitReached: "Limite diário de 1000 traduções atingido. Tente novamente amanhã." },
-    en: { badge: "Voice and subtitle translator", subtitle: "Communicate in over 30 languages with integrated translation, voice playback, and subtitles", normalTone: "Normal Tone", deepTone: "Deep Tone", speed: "Speed", origin: "Source", translation: "Translation", srcPlaceholder: "Type or speak...", outPlaceholder: "Translation will appear here...", speak: "Speak", listen: "Listen", clear: "Clear", history: "History", copy: "Copy", subtitleBtn: "Subtitle", translateBtn: "TRANSLATE NOW", translatingBtn: "TRANSLATING...", clearHistory: "Clear History", noHistory: "No recent history.", chars: "characters", autoTrans: "Auto translation", statusListening: "Listening...", statusTranslating: "Translating...", statusSuccess: "✓ Translated", statusCopied: "✓ Copied!", statusRecovered: "History recovered.", statusCleared: "History cleared.", statusError: "Translation error.", statusMicError: "Mic error.", statusMicDenied: "Mic denied.", statusNoSpeech: "No speech.", statusMicUnsupported: "Not supported.", modalTitle: "Subtitle Mode", modalClose: "Close", modalListen: "Listen", footer: "LinguaVox Tecnologia Multilingue", detected: "detected", downloadBtn: "Download MP3 Audio", statusDownloading: "Preparing download...", usage: "You have used {count}/1000 today", limitReached: "Daily limit of 1000 translations reached. Try again tomorrow." },
-    es: { badge: "Traductor de voz y subtítulos", subtitle: "Comunícate en más de 30 idiomas con traducción integrada, reproducción de voz y subtítulos", normalTone: "Tono Normal", deepTone: "Tono Grave", speed: "Velocidad", origin: "Origen", translation: "Traducción", srcPlaceholder: "Escribe o habla...", outPlaceholder: "La traducción aparecerá aquí...", speak: "Hablar", listen: "Escuchar", clear: "Limpiar", history: "Historial", copy: "Copiar", subtitleBtn: "Subtítulo", translateBtn: "TRADUCIR AHORA", translatingBtn: "TRADUCIENDO...", clearHistory: "Limpiar Historial", noHistory: "Sin historial.", chars: "caracteres", autoTrans: "Traducción automática", statusListening: "Escuchando...", statusTranslating: "Traduciendo...", statusSuccess: "✓ Traducido", statusCopied: "✓ ¡Copiado!", statusRecovered: "Recuperado.", statusCleared: "Limpiado.", statusError: "Error de traducción.", statusMicError: "Error de micrófono.", statusMicDenied: "Permiso denegado.", statusNoSpeech: "No se detectó habla.", statusMicUnsupported: "No soportado.", modalTitle: "Modo Subtítulo", modalClose: "Cerrar", modalListen: "Escuchar", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Descargar Audio MP3", statusDownloading: "Preparando descarga...", usage: "Has usado {count}/1000 hoy", limitReached: "Límite diario de 1000 traducciones alcanzado. Inténtalo de nuevo mañana." },
-    hi: { badge: "आवाज़ और सबटाइटल अनुवादक", subtitle: "एकीकृत अनुवाद, आवाज़ प्लेबैक और सबटाइटल के साथ 30 से अधिक भाषाओं में संवाद करें", normalTone: "सामान्य स्वर", deepTone: "गहरा स्वर", speed: "गति", origin: "स्रोत", translation: "अनुवाद", srcPlaceholder: "कुछ लिखें...", outPlaceholder: "अनुवाद यहाँ...", speak: "बोलें", listen: "सुनें", clear: "साफ़ करें", history: "इतिहास", copy: "कॉपी", subtitleBtn: "सबटाइटल", translateBtn: "अनुवाद करें", translatingBtn: "हो रहा है...", clearHistory: "साफ़ करें", noHistory: "कोई इतिहास नहीं।", chars: "अक्षर", autoTrans: "स्वचालित अनुवाद", statusListening: "सुन रहा है...", statusTranslating: "अनुवाद...", statusSuccess: "✓ अनुवादित", statusCopied: "✓ कॉपी!", statusRecovered: "पुनर्प्राप्त।", statusCleared: "साफ़ किया।", statusError: "त्रुटि।", statusMicError: "माइक त्रुटि।", statusMicDenied: "अनुमति नहीं।", statusNoSpeech: "कोई भाषण नहीं।", statusMicUnsupported: "समर्थित नहीं।", modalTitle: "सबटाइटल मोड", modalClose: "बंद करें", modalListen: "सुनें", footer: "LinguaVox Tecnologia Multilingue", detected: "पहचाना गया", downloadBtn: "MP3 डाउनलोड करें", statusDownloading: "डाउनलोड तैयार...", usage: "आपने आज {count}/1000 उपयोग किए", limitReached: "1000 अनुवादों की दैनिक सीमा समाप्त। कल पुनः प्रयास करें।" },
-    zh: { badge: "语音和字幕翻译器", subtitle: "使用集成翻译、语音播放和字幕，用 30 多种语言进行交流", normalTone: "正常音调", deepTone: "低沉音调", speed: "速度", origin: "源语言", translation: "翻译", srcPlaceholder: "输入内容...", outPlaceholder: "翻译将显示...", speak: "说话", listen: "收听", clear: "清除", history: "历史", copy: "复制", subtitleBtn: "字幕", translateBtn: "立即翻译", translatingBtn: "翻译中...", clearHistory: "清除历史", noHistory: "没有历史。", chars: "字符", autoTrans: "自动翻译", statusListening: "正在聆听...", statusTranslating: "正在翻译...", statusSuccess: "✓ 成功", statusCopied: "✓ 已复制！", statusRecovered: "已恢复。", statusCleared: "已清除。", statusError: "翻译错误。", statusMicError: "麦克风错误。", statusMicDenied: "权限被拒绝。", statusNoSpeech: "未检测到语音。", statusMicUnsupported: "不支持。", modalTitle: "字幕模式", modalClose: "关闭", modalListen: "收听", footer: "LinguaVox Tecnologia Multilingue", detected: "已检测", downloadBtn: "下载 MP3 音频", statusDownloading: "正在准备下载...", usage: "您今天已使用 {count}/1000", limitReached: "已达到每天 1000 次翻译的上限。请明天再试。" }
+    pt: { badge: "Tradutor com voz e legenda", subtitle: "Comunique-se em mais de 30 idiomas com tradução integrada, reprodução de voz e legendas", normalTone: "Tom Normal", deepTone: "Tom Grave", speed: "Velocidade", origin: "Origem", translation: "Tradução", srcPlaceholder: "Digite ou fale algo...", outPlaceholder: "A tradução aparecerá aqui...", speak: "Falar", listen: "Ouvir", clear: "Limpar", history: "Histórico", copy: "Copiar", subtitleBtn: "Legenda", translateBtn: "TRADUZIR AGORA", translatingBtn: "TRADUZINDO...", clearHistory: "Limpar Histórico", noHistory: "Nenhum histórico recente.", chars: "caracteres", autoTrans: "Tradução automática", statusListening: "Ouvindo... Fale agora.", statusTranslating: "Traduzindo...", statusSuccess: "✓ Traduzido com sucesso", statusCopied: "✓ Copiado!", statusRecovered: "Histórico recuperado.", statusCleared: "Histórico limpo.", statusError: "Erro na tradução.", statusMicError: "Erro no microfone.", statusMicDenied: "Permissão negada.", statusNoSpeech: "Nenhuma fala detectada.", statusMicUnsupported: "Voz não suportada.", modalTitle: "Modo Legenda", modalClose: "Fechar", modalListen: "Ouvir", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Baixar Áudio MP3", statusDownloading: "Preparando download...", usage: "Você usou {count}/1000 hoje", limitReached: "Limite diário de 1000 traduções atingido. Tente novamente amanhã.", cacheMsg: "✓ Recuperado do Cache (0 requisições)" },
+    en: { badge: "Voice and subtitle translator", subtitle: "Communicate in over 30 languages with integrated translation, voice playback, and subtitles", normalTone: "Normal Tone", deepTone: "Deep Tone", speed: "Speed", origin: "Source", translation: "Translation", srcPlaceholder: "Type or speak...", outPlaceholder: "Translation will appear here...", speak: "Speak", listen: "Listen", clear: "Clear", history: "History", copy: "Copy", subtitleBtn: "Subtitle", translateBtn: "TRANSLATE NOW", translatingBtn: "TRANSLATING...", clearHistory: "Clear History", noHistory: "No recent history.", chars: "characters", autoTrans: "Auto translation", statusListening: "Listening...", statusTranslating: "Translating...", statusSuccess: "✓ Translated", statusCopied: "✓ Copied!", statusRecovered: "History recovered.", statusCleared: "History cleared.", statusError: "Translation error.", statusMicError: "Mic error.", statusMicDenied: "Mic denied.", statusNoSpeech: "No speech.", statusMicUnsupported: "Not supported.", modalTitle: "Subtitle Mode", modalClose: "Close", modalListen: "Listen", footer: "LinguaVox Tecnologia Multilingue", detected: "detected", downloadBtn: "Download MP3 Audio", statusDownloading: "Preparing download...", usage: "You have used {count}/1000 today", limitReached: "Daily limit of 1000 translations reached. Try again tomorrow.", cacheMsg: "✓ Retrieved from Cache (0 requests)" },
+    es: { badge: "Traductor de voz y subtítulos", subtitle: "Comunícate en más de 30 idiomas con traducción integrada, reproducción de voz y subtítulos", normalTone: "Tono Normal", deepTone: "Tono Grave", speed: "Velocidad", origin: "Origen", translation: "Traducción", srcPlaceholder: "Escribe o habla...", outPlaceholder: "La traducción aparecerá aquí...", speak: "Hablar", listen: "Escuchar", clear: "Limpiar", history: "Historial", copy: "Copiar", subtitleBtn: "Subtítulo", translateBtn: "TRADUCIR AHORA", translatingBtn: "TRADUCIENDO...", clearHistory: "Limpiar Historial", noHistory: "Sin historial.", chars: "caracteres", autoTrans: "Traducción automática", statusListening: "Escuchando...", statusTranslating: "Traduciendo...", statusSuccess: "✓ Traducido", statusCopied: "✓ ¡Copiado!", statusRecovered: "Recuperado.", statusCleared: "Limpiado.", statusError: "Error de traducción.", statusMicError: "Error de micrófono.", statusMicDenied: "Permiso denegado.", statusNoSpeech: "No se detectó habla.", statusMicUnsupported: "No soportado.", modalTitle: "Modo Subtítulo", modalClose: "Cerrar", modalListen: "Escuchar", footer: "LinguaVox Tecnologia Multilingue", detected: "detectado", downloadBtn: "Descargar Audio MP3", statusDownloading: "Preparando descarga...", usage: "Has usado {count}/1000 hoy", limitReached: "Límite diario de 1000 traducciones alcanzado. Inténtalo de nuevo mañana.", cacheMsg: "✓ Recuperado de la Caché (0 peticiones)" },
+    hi: { badge: "आवाज़ और सबटाइटल अनुवादक", subtitle: "एकीकृत अनुवाद, आवाज़ प्लेबैक और सबटाइटल के साथ 30 से अधिक भाषाओं में संवाद करें", normalTone: "सामान्य स्वर", deepTone: "गहरा स्वर", speed: "गति", origin: "स्रोत", translation: "अनुवाद", srcPlaceholder: "कुछ लिखें...", outPlaceholder: "अनुवाद यहाँ...", speak: "बोलें", listen: "सुनें", clear: "साफ़ करें", history: "इतिहास", copy: "कॉपी", subtitleBtn: "सबटाइटल", translateBtn: "अनुवाद करें", translatingBtn: "हो रहा है...", clearHistory: "साफ़ करें", noHistory: "कोई इतिहास नहीं।", chars: "अक्षर", autoTrans: "स्वचालित अनुवाद", statusListening: "सुन रहा है...", statusTranslating: "अनुवाद...", statusSuccess: "✓ अनुवादित", statusCopied: "✓ कॉपी!", statusRecovered: "पुनर्प्राप्त।", statusCleared: "साफ़ किया।", statusError: "त्रुटि।", statusMicError: "माइक त्रुटि।", statusMicDenied: "अनुमति नहीं।", statusNoSpeech: "कोई भाषण नहीं।", statusMicUnsupported: "समर्थित नहीं।", modalTitle: "सबटाइटल मोड", modalClose: "बंद करें", modalListen: "सुनें", footer: "LinguaVox Tecnologia Multilingue", detected: "पहचाना गया", downloadBtn: "MP3 डाउनलोड करें", statusDownloading: "डाउनलोड तैयार...", usage: "आपने आज {count}/1000 उपयोग किए", limitReached: "1000 अनुवादों की दैनिक सीमा समाप्त। कल पुनः प्रयास करें।", cacheMsg: "✓ कैश से प्राप्त (0 अनुरोध)" },
+    zh: { badge: "语音和字幕翻译器", subtitle: "使用集成翻译、语音播放和字幕，用 30 多种语言进行交流", normalTone: "正常音调", deepTone: "低沉音调", speed: "速度", origin: "源语言", translation: "翻译", srcPlaceholder: "输入内容...", outPlaceholder: "翻译将显示...", speak: "说话", listen: "收听", clear: "清除", history: "历史", copy: "复制", subtitleBtn: "字幕", translateBtn: "立即翻译", translatingBtn: "翻译中...", clearHistory: "清除历史", noHistory: "没有历史。", chars: "字符", autoTrans: "自动翻译", statusListening: "正在聆听...", statusTranslating: "正在翻译...", statusSuccess: "✓ 成功", statusCopied: "✓ 已复制！", statusRecovered: "已恢复。", statusCleared: "已清除。", statusError: "翻译错误。", statusMicError: "麦克风错误。", statusMicDenied: "权限被拒绝。", statusNoSpeech: "未检测到语音。", statusMicUnsupported: "不支持。", modalTitle: "字幕模式", modalClose: "关闭", modalListen: "收听", footer: "LinguaVox Tecnologia Multilingue", detected: "已检测", downloadBtn: "下载 MP3 音频", statusDownloading: "正在准备下载...", usage: "您今天已使用 {count}/1000", limitReached: "已达到每天 1000 次翻译的上限。请明天再试。", cacheMsg: "✓ 已从缓存获取（0 次请求）" }
   };
   
   const LANGS = [
@@ -218,64 +226,108 @@
   const specialLocales = { ar: ['ar-SA', 'ar-EG', 'ar-AE', 'ar'], 'ar-EG': ['ar-EG'], 'ar-MA': ['ar-MA'], he: ['he-IL', 'he', 'iw-IL', 'iw'], no: ['nb-NO', 'no-NO', 'no', 'nn-NO'], id: ['id-ID', 'id'] };
   
   let state = { from: "pt", to: "en", history: [], audioProfile: "normal", speed: 1.0, uiLang: "pt" };
-  
-  // --- SISTEMA DE CACHE E LIMITE DIÁRIO ---
-  const DAILY_LIMIT = 1000;
-  let dailyUsage = 0;
 
-  function getTodayDate() {
-    return new Date().toISOString().split('T')[0];
+  // --- SISTEMA DE CACHE E CONTADOR (DO CÓDIGO ENVIADO) ---
+  function getContador() {
+    const hoje = new Date().toISOString().slice(0,10);
+    const dados = JSON.parse(localStorage.getItem("linguavox_contador") || "{}");
+    if (dados.data !== hoje) return { data: hoje, qtd: 0 };
+    return dados;
   }
 
-  function initUsage() {
-    const today = getTodayDate();
-    const savedDate = localStorage.getItem('linguavox_usage_date');
-    const savedCount = localStorage.getItem('linguavox_usage_count');
-
-    if (savedDate === today) {
-      dailyUsage = parseInt(savedCount) || 0;
-    } else {
-      dailyUsage = 0;
-      localStorage.setItem('linguavox_usage_date', today);
-      localStorage.setItem('linguavox_usage_count', '0');
-    }
-    updateUsageUI();
-  }
-
-  function incrementUsage() {
-    dailyUsage++;
-    localStorage.setItem('linguavox_usage_count', dailyUsage.toString());
-    updateUsageUI();
-  }
-
-  function updateUsageUI() {
-    const el = document.getElementById('usageCounter');
+  function salvarContador(qtd) {
+    const hoje = new Date().toISOString().slice(0,10);
+    localStorage.setItem("linguavox_contador", JSON.stringify({ data: hoje, qtd }));
+    const el = document.getElementById("usageCounter");
     if (el) {
-      el.textContent = t('usage').replace('{count}', dailyUsage);
-      if (dailyUsage >= DAILY_LIMIT) {
-        el.classList.add('limit-reached');
+      el.textContent = t('usage').replace('{count}', qtd);
+      if (qtd >= LIMITE_DIA) {
+        el.classList.add("limit-reached");
       } else {
-        el.classList.remove('limit-reached');
+        el.classList.remove("limit-reached");
       }
     }
   }
 
-  function getCacheKey(text, from, to) {
-    return `linguavox_cache_${from}_${to}_${text}`;
+  function getHistorico() {
+    return JSON.parse(localStorage.getItem("linguavox_hist") || "{}");
   }
 
-  function getFromCache(text, from, to) {
-    try {
-      return localStorage.getItem(getCacheKey(text, from, to));
-    } catch(e) { return null; }
+  // MOTORES
+  async function translateLingva(text, from, to) {
+    const apiFrom = from.split('-')[0]; const apiTo = to.split('-')[0];
+    const instances = [
+      "https://lingva.ml/api/v1",
+      "https://lingva.garudalinux.org/api/v1",
+      "https://translate.plausibility.cloud/api/v1",
+      "https://lingva.lunar.icu/api/v1"
+    ];
+    for (const base of instances) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 2000);
+        const url = `${base}/${apiFrom}/${apiTo}/${encodeURIComponent(text)}`;
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data && data.translation) return data.translation;
+      } catch(e) { continue; }
+    }
+    throw new Error("Lingva falhou");
   }
 
-  function saveToCache(text, from, to, translation) {
-    try {
-      localStorage.setItem(getCacheKey(text, from, to), translation);
-    } catch(e) { console.warn("Cache cheio", e); }
+  async function translateGoogle(text, from, to) {
+    const apiFrom = from.split('-')[0]; const apiTo = to.split('-')[0];
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${apiFrom}&tl=${apiTo}&dt=t&q=${encodeURIComponent(text)}`;
+    const res = await fetch(url); 
+    if (!res.ok) throw new Error("Google API Error"); 
+    const data = await res.json(); 
+    return data[0].map(x => x[0]).join("");
   }
-  // ----------------------------------------
+
+  async function translateMyMemory(text, from, to) {
+    const apiFrom = from.split('-')[0]; const apiTo = to.split('-')[0];
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${apiFrom}|${apiTo}&de=${EMAIL_MYMEMORY}`;
+    const res = await fetch(url); 
+    if (!res.ok) throw new Error("MyMemory API Error"); 
+    const data = await res.json(); 
+    if (data.responseData && data.responseData.translatedText) return data.responseData.translatedText; 
+    throw new Error("MyMemory vazio");
+  }
+
+  // TRADUÇÃO COM FALLBACK E CACHE
+  async function traduzirComFallback(texto, from, to) {
+    const cacheKey = `${from}|${to}|${texto}`;
+    const hist = getHistorico();
+    
+    // 1. Cache (0 requisições)
+    if (hist[cacheKey]) return { text: hist[cacheKey], cached: true };
+
+    // 2. Limite
+    const cont = getContador();
+    if (cont.qtd >= LIMITE_DIA) throw new Error("LIMITE_REACHED");
+
+    // 3. Fallback: Lingva -> Google -> MyMemory
+    let traduzido = null;
+    try { traduzido = await translateLingva(texto, from, to); } catch(e) {}
+    if (!traduzido) {
+      try { traduzido = await translateGoogle(texto, from, to); } catch(e) {}
+    }
+    if (!traduzido) {
+      try { traduzido = await translateMyMemory(texto, from, to); } catch(e) {}
+    }
+    
+    if (!traduzido) throw new Error("Todos os motores falharam");
+
+    // Salvar no cache e incrementar
+    hist[cacheKey] = traduzido;
+    localStorage.setItem("linguavox_hist", JSON.stringify(hist));
+    salvarContador(cont.qtd + 1);
+
+    return { text: traduzido, cached: false };
+  }
+  // -----------------------------------------------------------
 
   try {
     const savedHist = localStorage.getItem("linguavox-h"); if (savedHist) state.history = JSON.parse(savedHist);
@@ -297,7 +349,10 @@
     document.getElementById("translateBtn").textContent = t('translateBtn'); document.getElementById("uiClearHist").textContent = t('clearHistory'); document.getElementById("uiAutoTrans").textContent = t('autoTrans'); document.getElementById("uiFooter").textContent = t('footer');
     document.getElementById("uiModalTitle").textContent = t('modalTitle'); document.getElementById("uiModalClose").textContent = t('modalClose'); document.getElementById("uiModalListen").textContent = t('modalListen');
     document.getElementById("uiDownloadBtn").textContent = t('downloadBtn'); 
-    updateCounts(); updateHistoryUI(); updateLangUI(); updateUsageUI();
+    updateCounts(); updateHistoryUI(); updateLangUI(); 
+    // Update counter text on language change
+    const cont = getContador();
+    salvarContador(cont.qtd);
   }
   
   uiLangSelect.value = state.uiLang; uiLangSelect.addEventListener("change", (e) => { state.uiLang = e.target.value; localStorage.setItem("linguavox-uilang", state.uiLang); applyLanguage(); });
@@ -337,99 +392,42 @@
   document.addEventListener("click", (e) => { if (!e.target.closest('#fromContainer') && !e.target.closest('#toContainer')) { fromDropdown.classList.remove("active"); toDropdown.classList.remove("active"); } if (!e.target.closest('#histBtn') && !e.target.closest('#historyPanel')) { historyPanel.classList.remove("active"); } });
   document.getElementById("swapBtn").onclick = () => { const temp = state.from; state.from = state.to; state.to = temp; const tempText = srcText.value; srcText.value = outText.value; outText.value = tempText; updateLangUI(); updateCounts(); if (srcText.value.trim()) doTranslate(); };
 
-  async function translateGoogle(text, from, to) {
-    const apiFrom = from.split('-')[0]; const apiTo = to.split('-')[0];
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${apiFrom}&tl=${apiTo}&dt=t&q=${encodeURIComponent(text)}`;
-    const res = await fetch(url); if (!res.ok) throw new Error("Google API Error"); const data = await res.json(); return data[0].map(x => x[0]).join("");
-  }
-  async function translateMyMemory(text, from, to) {
-    const apiFrom = from.split('-')[0]; const apiTo = to.split('-')[0];
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${apiFrom}|${apiTo}`;
-    const res = await fetch(url); if (!res.ok) throw new Error("MyMemory API Error"); const data = await res.json(); if (data.responseData && data.responseData.translatedText) return data.responseData.translatedText; throw new Error("Tradução vazia");
-  }
-
-  const LINGVA_INSTANCES = [
-    "https://lingva.ml/api/v1",
-    "https://lingva.garudalinux.org/api/v1",
-    "https://translate.plausibility.cloud/api/v1",
-    "https://lingva.lunar.icu/api/v1"
-  ];
-
-  async function translateLingva(text, from, to) {
-    const apiFrom = from.split('-')[0]; const apiTo = to.split('-')[0];
-    for (const base of LINGVA_INSTANCES) {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 2000);
-        const url = `${base}/${apiFrom}/${apiTo}/${encodeURIComponent(text)}`;
-        const res = await fetch(url, { signal: controller.signal });
-        clearTimeout(timeout);
-        if (!res.ok) continue;
-        const data = await res.json();
-        if (data && data.translation) return data.translation;
-      } catch(e) { continue; }
-    }
-    throw new Error("Todas instâncias Lingva falharam");
-  }
-
-  async function robustTranslate(text, from, to) {
-    if (!text.trim()) return "";
-    try { return await translateGoogle(text, from, to); } catch(e) {}
-    try { return await translateMyMemory(text, from, to); } catch(e) {}
-    try { return await translateLingva(text, from, to); } catch(e) {}
-    throw new Error("Todos os motores falharam.");
-  }
-
   let isTranslating = false;
   async function doTranslate() {
     const text = srcText.value.trim(); 
     if (!text) { outText.value = ""; updateCounts(); setStatus(t('srcPlaceholder')); return; } 
     if (isTranslating) return;
 
-    // 1. Verifica o Cache (Economiza requisição)
-    const cachedResult = getFromCache(text, state.from, state.to);
-    if (cachedResult) {
-      outText.value = cachedResult;
-      updateCounts();
-      setStatus(t('statusSuccess'), false);
-      // Não incrementa uso pois foi cache
-      
-      // Atualiza o histórico mesmo vindo do cache
-      state.history.unshift({ src: text, out: cachedResult, at: Date.now() }); 
-      if (state.history.length > 30) state.history.pop();
-      localStorage.setItem("linguavox-h", JSON.stringify(state.history)); 
-      localStorage.setItem("linguavox-src", text); 
-      localStorage.setItem("linguavox-out", cachedResult); 
-      updateHistoryUI();
-      return;
-    }
+    isTranslating = true; 
+    translateBtn.disabled = true; 
+    translateBtn.textContent = t('translatingBtn'); 
+    setStatus(t('statusTranslating'));
 
-    // 2. Verifica Limite Diário
-    if (dailyUsage >= DAILY_LIMIT) {
-      setStatus(t('limitReached'), true);
-      return;
-    }
-    
-    // 3. Faz a requisição na API
-    isTranslating = true; translateBtn.disabled = true; translateBtn.textContent = t('translatingBtn'); setStatus(t('statusTranslating'));
     try {
-      const result = await robustTranslate(text, state.from, state.to); 
-      outText.value = result; 
-      updateCounts(); 
-      setStatus(t('statusSuccess'), false);
+      const result = await traduzirComFallback(text, state.from, state.to);
       
-      // Salva no cache e incrementa uso
-      saveToCache(text, state.from, state.to, result);
-      incrementUsage();
+      outText.value = result.text;
+      updateCounts();
+      
+      if (result.cached) {
+        setStatus(t('cacheMsg'), false);
+      } else {
+        setStatus(t('statusSuccess'), false);
+      }
 
-      state.history.unshift({ src: text, out: result, at: Date.now() }); 
+      state.history.unshift({ src: text, out: result.text, at: Date.now() }); 
       if (state.history.length > 30) state.history.pop();
       localStorage.setItem("linguavox-h", JSON.stringify(state.history)); 
       localStorage.setItem("linguavox-src", text); 
-      localStorage.setItem("linguavox-out", result); 
+      localStorage.setItem("linguavox-out", result.text); 
       updateHistoryUI();
+
     } catch (error) { 
-      setStatus(t('statusError'), true); 
+      if (error.message === "LIMITE_REACHED") {
+        setStatus(t('limitReached'), true);
+      } else {
+        setStatus(t('statusError'), true); 
+      }
     } finally { 
       isTranslating = false; 
       translateBtn.disabled = false; 
@@ -438,7 +436,22 @@
   }
   
   translateBtn.onclick = doTranslate;
-  srcText.addEventListener("input", () => { updateCounts(); clearTimeout(window._typingTimer); window._typingTimer = setTimeout(() => { if (srcText.value.trim().length >= 3) doTranslate(); }, 1200); });
+
+  // DEBOUNCE ATUALIZADO CONFORME O CÓDIGO ENVIADO
+  srcText.addEventListener("input", () => {
+    updateCounts();
+    const texto = srcText.value.trim();
+    
+    // não chama se for igual, vazio ou muito curto
+    if (!texto || texto.length < 3 || texto === ultimaFrase) return;
+
+    clearTimeout(timerDebounce);
+    timerDebounce = setTimeout(async () => {
+      ultimaFrase = texto;
+      await doTranslate();
+    }, DEBOUNCE_MS);
+  });
+
   srcText.addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") doTranslate(); });
   document.getElementById("clearBtn").onclick = () => { srcText.value = ""; outText.value = ""; updateCounts(); setStatus(""); srcText.focus(); };
   document.getElementById("copyBtn").onclick = async () => { if (!outText.value) return; try { await navigator.clipboard.writeText(outText.value); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } catch (e) { outText.select(); document.execCommand("copy"); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } };
@@ -518,7 +531,8 @@
   micBtn.onclick = () => { if (!recognition) { setStatus(t('statusMicUnsupported'), true); return; } if (isListening) { recognition.stop(); } else { let recLang = (specialLocales[state.from] && specialLocales[state.from][0]) || localeMap[state.from] || state.from; recognition.lang = recLang; try { recognition.start(); } catch(e) { recognition.stop(); } } };
   
   function init() { 
-    initUsage();
+    // Inicializa o contador visual
+    salvarContador(getContador().qtd);
     applyLanguage(); 
     updateLangUI(); 
     updateHistoryUI(); 
