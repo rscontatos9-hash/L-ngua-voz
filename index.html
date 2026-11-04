@@ -216,7 +216,6 @@
     </div>
     <div class="speed-control"><label id="uiSpeed">Velocidade</label><input type="range" id="speedSlider" min="0.5" max="1.5" step="0.1" value="1.0"><span id="speedValue">1.0x</span></div>
     
-    <!-- CONTROLE DE REPETIÇÃO -->
     <div class="repeat-control">
       <label id="uiRepeat">Repetir</label>
       <select class="repeat-select" id="repeatSelect">
@@ -234,7 +233,6 @@
     </div>
   </div>
   
-  <!-- Painel de Origem -->
   <div class="panel">
     <div class="panel-header"><span class="panel-label label-origem" id="uiOrigin">Origem</span><span class="chip" id="fromChip">Português</span></div>
     <textarea id="srcText" placeholder="Digite ou fale algo..."></textarea>
@@ -256,7 +254,6 @@
     <div class="panel-footer"><span id="srcCount">0 caracteres</span><span>Ctrl+Enter</span></div>
   </div>
   
-  <!-- Painel de Tradução -->
   <div class="panel">
     <div class="panel-header"><span class="panel-label label-traducao" id="uiTranslation">Tradução</span><span class="chip" id="toChip">Inglês detectado</span></div>
     <textarea id="outText" placeholder="A tradução aparecerá aqui..." readonly></textarea>
@@ -281,7 +278,6 @@
   </div>
 </div>
 
-<!-- OVERLAY LEGENDA -->
 <div class="overlay" id="overlay">
   <div class="overlay-content">
     <h3 id="uiModalTitle">Modo Legenda</h3>
@@ -452,34 +448,70 @@
   document.getElementById("clearBtn").onclick = () => { srcText.value = ""; outText.value = ""; updateCounts(); setStatus(""); srcText.focus(); };
   document.getElementById("copyBtn").onclick = async () => { if (!outText.value) return; try { await navigator.clipboard.writeText(outText.value); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } catch (e) { outText.select(); document.execCommand("copy"); setStatus(t('statusCopied')); setTimeout(() => setStatus(""), 2000); } };
   
-  // --- SISTEMA DE VOZ NEURAL CORRIGIDO (SEM REPETIÇÃO DUPLA) ---
+  // --- SISTEMA DE VOZ NEURAL CORRIGIDO (PREVENÇÃO DE ÁUDIO DUPLICADO) ---
   let currentAudio = null;
   let repeatTimeout = null;
+  let currentPlayId = 0; // Controla a sessão de áudio para evitar sobreposição
 
   async function speak(text, langCode, repeat = 1) {
     if (!text.trim() || repeat <= 0) return; 
     
-    // Cancela áudio e repetições anteriores
+    // 1. Cancela qualquer áudio, timeout ou fala anterior
+    currentPlayId++;
+    const myPlayId = currentPlayId;
+
     if (repeatTimeout) clearTimeout(repeatTimeout);
     if (currentAudio) {
       currentAudio.pause();
-      currentAudio.currentTime = 0;
+      currentAudio.onended = null;
+      currentAudio.onerror = null;
       currentAudio = null;
     }
     speechSynthesis.cancel();
 
-    const iterationMsg = repeat > 1 ? ` (${repeat} restantes)` : "";
+    const iterationMsg = repeat > 1 ? ` (${repeat}x)` : "";
+    setStatus(`🔊 Carregando...${iterationMsg}`);
 
-    // 1. Tenta Tom Grave (Nativo do Navegador)
+    // Função auxiliar para tocar a tag <audio> e gerenciar o término
+    const playAudioElement = (url) => {
+      if (myPlayId !== currentPlayId) return; // Aborta se uma nova solicitação já começou
+
+      currentAudio = new Audio(url);
+      currentAudio.onplay = () => {
+        if (myPlayId === currentPlayId) setStatus(`🔊 Reproduzindo...${iterationMsg}`);
+      };
+      currentAudio.onended = () => {
+        if (myPlayId !== currentPlayId) return;
+        setStatus("");
+        currentAudio = null;
+        if (repeat > 1) {
+          repeatTimeout = setTimeout(() => {
+            if (myPlayId === currentPlayId) speak(text, langCode, repeat - 1);
+          }, 500);
+        }
+      };
+      currentAudio.onerror = () => {
+        if (myPlayId !== currentPlayId) return;
+        currentAudio = null;
+        playBrowserVoice(text, langCode, state.audioProfile === 'grave' ? 0.8 : 1.05, repeat, myPlayId);
+      };
+
+      currentAudio.play().catch(e => {
+        if (myPlayId !== currentPlayId) return;
+        currentAudio = null;
+        playBrowserVoice(text, langCode, state.audioProfile === 'grave' ? 0.8 : 1.05, repeat, myPlayId);
+      });
+    };
+
+    // 2. Tenta Tom Grave (Nativo do Navegador)
     if (state.audioProfile === 'grave') {
-      playBrowserVoice(text, langCode, 0.8, repeat);
+      playBrowserVoice(text, langCode, 0.8, repeat, myPlayId);
       return;
     }
 
-    // 2. Tenta Voz Neural Microsoft (Melhor qualidade humana)
+    // 3. Tenta Voz Neural Microsoft (Melhor qualidade)
     if (window.EdgeTTS) {
       try {
-        setStatus(`🔊 Buscando voz...${iterationMsg}`);
         const targetLang = (localeMap[langCode] || langCode).toLowerCase();
         const langPrefix = targetLang.split('-')[0];
         const voices = await window.EdgeTTS.listVoices();
@@ -487,56 +519,38 @@
 
         if (femaleVoice) {
           const url = await window.EdgeTTS.Communicate(text, { voice: femaleVoice.Name });
-          currentAudio = new Audio(url);
-          
-          currentAudio.onplay = () => setStatus(`🔊 Reproduzindo...${iterationMsg}`);
-          currentAudio.onended = () => { 
-            setStatus(""); 
-            currentAudio = null; 
-            if (repeat > 1) {
-              repeatTimeout = setTimeout(() => speak(text, langCode, repeat - 1), 600);
-            }
-          };
-          
-          await currentAudio.play();
-          return; // Áudio tocou com sucesso, encerra a função
+          if (myPlayId === currentPlayId) {
+            playAudioElement(url);
+            return;
+          }
         }
       } catch (e) {
-        console.warn("EdgeTTS falhou, tentando Google TTS.", e);
-        // Não faz return, vai para o próximo fallback
+        console.warn("EdgeTTS falhou, usando fallback.", e);
       }
     }
 
-    // 3. Tenta Google TTS (Fallback de excelente qualidade)
-    const apiLang = langCode.split('-')[0];
+    if (myPlayId !== currentPlayId) return;
+
+    // 4. Tenta Google TTS (Fallback)
     if (text.length <= 200) {
       try {
-        setStatus(`🔊 Carregando voz...${iterationMsg}`);
+        const apiLang = langCode.split('-')[0];
         const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${apiLang}&client=tw-ob`;
-        currentAudio = new Audio(url);
-        
-        currentAudio.onplay = () => setStatus(`🔊 Reproduzindo...${iterationMsg}`);
-        currentAudio.onended = () => { 
-          setStatus(""); 
-          currentAudio = null; 
-          if (repeat > 1) {
-            repeatTimeout = setTimeout(() => speak(text, langCode, repeat - 1), 600);
-          }
-        };
-
-        await currentAudio.play();
-        return; // Áudio tocou com sucesso, encerra a função
+        playAudioElement(url);
+        return;
       } catch (e) {
-        console.warn("Google TTS falhou, usando voz do navegador.", e);
-        currentAudio = null;
+        console.warn("Google TTS falhou.", e);
       }
     }
 
-    // 4. Fallback final (Voz nativa do celular)
-    playBrowserVoice(text, langCode, 1.05, repeat);
+    if (myPlayId !== currentPlayId) return;
+
+    // 5. Fallback final (Voz nativa do celular)
+    playBrowserVoice(text, langCode, 1.05, repeat, myPlayId);
   }
 
-  function playBrowserVoice(text, langCode, pitchValue, repeat = 1) {
+  function playBrowserVoice(text, langCode, pitchValue, repeat, playId) {
+    if (playId !== currentPlayId) return;
     if (!("speechSynthesis" in window)) { setStatus(t('statusError'), true); return; }
     
     const utterance = new SpeechSynthesisUtterance(text); 
@@ -558,16 +572,22 @@
     utterance.pitch = pitchValue; 
     utterance.rate = state.speed; 
     
-    const iterationMsg = repeat > 1 ? ` (${repeat} restantes)` : "";
+    const iterationMsg = repeat > 1 ? ` (${repeat}x)` : "";
     setStatus(`🔊 Reproduzindo...${iterationMsg}`); 
     
     utterance.onend = () => { 
+      if (playId !== currentPlayId) return;
       setStatus(""); 
       if (repeat > 1) {
-        repeatTimeout = setTimeout(() => speak(text, langCode, repeat - 1), 600);
+        repeatTimeout = setTimeout(() => {
+          if (playId === currentPlayId) speak(text, langCode, repeat - 1);
+        }, 500);
       }
     }; 
-    utterance.onerror = (e) => { setStatus(t('statusError'), true); setTimeout(() => setStatus(""), 3000); };
+    utterance.onerror = (e) => { 
+      if (playId !== currentPlayId) return;
+      setStatus(t('statusError'), true); setTimeout(() => setStatus(""), 3000); 
+    };
     
     speechSynthesis.speak(utterance); 
   }
